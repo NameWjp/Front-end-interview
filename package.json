@@ -1,0 +1,16 @@
+{
+  "name": "front-end-interview",
+  "version": "1.0.0",
+  "description": "前端面试题",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs",
+    "publish": "deploy.sh"
+  },
+  "author": "wangjp",
+  "license": "ISC",
+  "devDependencies": {
+    "vuepress": "^1.8.2"
+  }
+}
