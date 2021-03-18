@@ -33,3 +33,8 @@ Vue3 除了性能提升外，相比 Vue2 有以下特点：
 在 Vue3 Composition API 中，代码是根据逻辑功能来组织的，一个功能的所有 api 会放在一起（高内聚，低耦合），这样做，即时项目很大，功能很多，都能快速的定位到这个功能所用到的所有 API。提高可读性和可维护性，而且基于函数组合的 API 更好的重用逻辑代码（和 React 的 Hooks 类似）。
 3. 全面支持 TypeScript  
 内部采用 TypeScript 重写，并在工具链上提供对 TypeScript 的支持。
+
+## Vue 和 React 的区别是什么
+设计理念不同，Redux 使用的是不可变数据，而 Vuex 的数据是可变的。  
+Vue 通过 getter/setter 以及一些函数的劫持，能精确知道数据变化。而 React 更强调数据的不可变（immutable）。比如改变一个对象属性的值，在 Vue 可以直接修改，而在 React 需要拿一个新值替换旧值。
+原因？？
