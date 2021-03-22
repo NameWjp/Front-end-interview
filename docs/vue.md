@@ -28,8 +28,8 @@ Vue 的初始化如图所示，在执行 Observer 的时候会给 data 中的每
 Vue3 除了性能提升外，相比 Vue2 有以下特点：  
 1. 使用 Proxy 替代 Object.defineProperty  
 替换之后对象或数组可以在没有提前定义 key 的情况下直接赋值。（Object.defineProperty 需要提前知道 key 才能拦截这个 key 的访问，而 Proxy 是直接拦截整个对象的访问）
-2. 增加 Composition  
-在vue2中我们会在一个 vue 文件中 data，methods，computed，watch 中定义属性和方法，共同处理页面逻辑. 一个功能往往需要在不同的vue配置项中定义属性和方法，比较分散.即使通过 Mixins 重用逻辑代码，也容易发生命名冲突且关系不清。  
+2. 增加 Composition API  
+在vue2中我们会在一个 vue 文件中 data，methods，computed，watch 中定义属性和方法，共同处理页面逻辑。一个功能往往需要在不同的vue配置项中定义属性和方法，比较分散。即使通过 Mixins 重用逻辑代码，也容易发生命名冲突且关系不清。  
 在 Vue3 Composition API 中，代码是根据逻辑功能来组织的，一个功能的所有 api 会放在一起（高内聚，低耦合），这样做，即时项目很大，功能很多，都能快速的定位到这个功能所用到的所有 API。提高可读性和可维护性，而且基于函数组合的 API 更好的重用逻辑代码（和 React 的 Hooks 类似）。
 3. 全面支持 TypeScript  
 内部采用 TypeScript 重写，并在工具链上提供对 TypeScript 的支持。
