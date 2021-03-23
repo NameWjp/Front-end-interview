@@ -46,4 +46,36 @@ Vue3 除了性能提升外，相比 Vue2 有以下特点：
 由于我自身没有用过 immutable.js，所以不做太多评价，但从使用过的人的评价来看，还是有不少问题的，推荐链接：[https://juejin.cn/post/6844903859618332680#heading-2](https://juejin.cn/post/6844903859618332680#heading-2)
 
 当然两种框架由于设计理念的不同，走上了不同的道路，没有高低优劣之分。个人感觉 vue 在官方支持上面比 react 更好，包括路由，状态管理等，都是由官方维护，且都有详细的文档。但 react 更加灵活，且比较纯粹，但是有许多问题都是由社区来解决，所以会有五花八门的库，选择和学习上会有一定困难。其实 vue3 出来后，和 react 在灵活性上已经差不多了，Composition API 和 Hooks 思路是一样的，大家根据自己的爱好合理选择即可。  
-另外推荐一篇文章：[http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/](http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/) 关于 vue2 中高阶组件的实现。
+另外推荐一篇文章：[http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/](http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/) 关于 vue2 中高阶组件的实现。  
+
+## Vue 父子组件生命周期执行顺序
+
+```js
+// 渲染
+parent beforeCreate
+parent created
+parent beforeMount
+sub beforeCreate
+sub created
+sub beforeMount
+sub mounted
+parent mounted
+
+// 数据更新
+parent beforeUpdate
+sub beforeUpdate
+sub updated
+parent updated
+
+// 销毁组件
+parent beforeDestroy
+sub beforeDestroy
+sub destroyed
+parent destroyed
+
+```
+注意 `mounted` 不会保证所有的子组件也都一起被挂载，因为可能有异步组件的存在。
+
+## vue-router原理
+
+## vuex原理

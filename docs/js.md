@@ -214,4 +214,53 @@ function throttle(fn, delay) {
 }
 ```
 
-## 实现 async/await 
+## async 和 Generator 的关系，如何使用 Generator 实现 async
+async 语法是内置自动执行器的 Generator 的语法糖。  
+利用 `Generator` 实现 `async/await` 主要就是用一个函数（自动执行器）来包装 `Generator`，从而实现自动执行 `Generator`。  
+每次执行 `next()` 返回的 `{ value, done }` 中的 value 是一个 Promise，所以要等它执行完毕后再执行下一次 `next()`，即在它的后面加一个 `then()` 函数，并且在 `then()` 函数中执行 next()。  
+```js
+function t(data) {
+  return new Promise(r => setTimeout(() => r(data), 100))
+}
+
+function *test() {
+  const data1 = yield t(1)
+  console.log(data1)
+  const data2 = yield t(2)
+  console.log(data2)
+  return 3
+}
+
+function async(generator) {
+  return new Promise((resolve, reject) => {
+    const gen = generator()
+
+    function step(nextFun) {
+      // 每一次 next() 都是返回这样的数据 { value: xx, done: false }，结束时 done 为 true
+      let next
+      try {
+        // 如果 generator() 执行报错，需要 reject 给外面的 catch 函数
+        next = nextFun()
+      } catch(e) {
+        return reject(e)
+      }
+
+      // done: true 代表 generator() 结束了
+      if (next.done) {
+        return resolve(next.value)
+      }
+
+      Promise.resolve(next.value).then(
+        (val) => step(() => gen.next(val)), // 通过 next(val) 将 val 传给 yield 后面的变量 
+        (err) => step(() => gen.trhow(err)),
+      )
+    }
+
+    step(() => gen.next())
+  })
+}
+
+// 1 2 3
+async(test).then(val => console.log(val))
+
+```
