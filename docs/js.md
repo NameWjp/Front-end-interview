@@ -214,4 +214,4 @@ function throttle(fn, delay) {
 }
 ```
 
-## 为什么 async 可以把异步用同步的方法表示，它和 Generator 的关系是什么？
+## 实现 async/await 
