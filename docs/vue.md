@@ -37,7 +37,17 @@ Vue3 除了性能提升外，相比 Vue2 有以下特点：
 ## Vue 和 React 的区别是什么
 设计理念不同，React 强调数据的不可变（immutable），而 Vue 的数据是可变的，通过 getter/setter 以及一些函数的劫持，能精确知道数据变化。比如改变一个对象属性的值，在 Vue 可以直接修改，而在 React 需要拿一个新对象替换旧对象。使用不可变有以下好处：  
 1. 在使用不可变的数据后，React 不需要深层次的比较对象是否被改变，只需要判断当前对象和之前的对象引用是否相同。
-2. 由于使用的不可变数据，在每次改变数据的时候可以得到之前的快照，可以很方便的追踪数据的变化。
+2. 由于使用的不可变数据，在每次改变数据的时候可以得到之前的快照，可以很方便的追踪数据的变化。  
+3. 降低了可变对象的复杂度，比如下面的一段代码：
+```js
+function touchAndLog(touchFn) {
+  const data = { key: 'value' };
+  touchFn(data);
+  console.log(data.key); // 猜猜会打印什么？
+}
+```
+如果使用 immutable 则我们可以确定打印的是 { key: 'value' }。
+
 
 使用不可变的数据在维护上更加方便，但也有它的缺点:  
 1. 由于只知道对象改变了，不知道哪个地方改变了，所以 React 会对新旧对象生成的 VNode diff，在对象数据很庞大的时候会相当耗时，从而阻塞 ui 线程，界面就会给人卡住的感觉，这也是 Fiber 架构出现的原因。而 Vue 得益于它的依赖收集，改变一个对象的属性后能够精准的知道哪些 watcher 需要重新渲染，然后在这个基础上再进行 VNode diff 渲染等工作（相比 React 省去了一部分的 diff）。所以 Vue 从理论上性能是好于 React 的。  
@@ -77,5 +87,13 @@ parent destroyed
 注意 `mounted` 不会保证所有的子组件也都一起被挂载，因为可能有异步组件的存在。
 
 ## vue-router原理
+简单的说，vue-router 的原理就是通过监听 URL 地址的变化，从注册的路由中渲染相应的组件。根据类型分为 hash 模式和 history 模式。hash 模式实现原理是基于 `window.location.hash` 来获取对应的 hash 值，改变 hash 值并不会刷新页面。history 模式依赖于 `history` 提供的接口，例如 `history.pushState` 可以修改 url 但并不会刷新页面，但如果此时用户手动刷新页面，如果服务器没有配置 url 对应的资源，则会返回 404，常见的写法如下（nginx 配置）：
+```
+location /es6/ {
+  try_files $uri $uri/ /es6/index.html;
+  index index.html;
+}
+```
 
 ## vuex原理
+vuex 的内部会初始化一个 store 实例（store 内部会实例化一个 vue 实例 vm 用于响应式处理，vuex 和 vue 强关联），之后会将 store 实例挂载到所有组件中，这样所有组件引用的都是同一个 store 实例。访问 store 实例里的数据会被代理到内部的 vm 实例上，这样一旦修改了 store 实例的数据，vm 便会通知所有视图更新数据。

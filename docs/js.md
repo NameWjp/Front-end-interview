@@ -176,6 +176,9 @@ xss攻击的本质是代码注入，利用浏览器拼接成任意的 javascript
 csrf攻击是利用浏览器可以跨域发送请求，而每个 http 请求浏览器都会自动携带对应域名下的 cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。
 
 ## 防抖和节流函数
+防抖：在指定的时间内不执行才会调用。例如调整浏览器窗口大小时，`resize` 次数过于频繁，但我们只需要调整完窗口后再计算，这里就可以用防抖处理。    
+节流：控制调用的频率，多长时间内只能调用一次。例如商城里面的放大镜效果，`onmouseover` 触发过于频繁，这时就需要使用节流控制调用频率。
+
 ```js
 /**
  * 防抖函数
@@ -213,6 +216,7 @@ function throttle(fn, delay) {
   }
 }
 ```
+在使用上可以使用 lodash 库提供的防抖和节流，功能更加完善。
 
 ## async 和 Generator 的关系，如何使用 Generator 实现 async
 async 语法是内置自动执行器的 Generator 的语法糖。  
@@ -262,5 +266,31 @@ function async(generator) {
 
 // 1 2 3
 async(test).then(val => console.log(val))
-
 ```
+
+## 函数柯里化的优点和实现
+柯里化的优点如下：
+1. 参数复用
+2. 提前返回
+3. 延迟计算/运行
+实现如下：
+```js
+function sub_curry(fn, ...params) {
+  return function(...newParams) {
+    return fn.apply(this, [...params, ...newParams]);
+  };
+}
+
+function curry(fn, length) {
+  length = length || fn.length;
+  
+  return function(...params) {
+    if (params.length < length) {
+      return curry(sub_curry.apply(this, [fn, ...params]), length - params.length);
+    } else {
+      return fn.apply(this, params);
+    }
+  };
+}
+```
+在使用上可以使用 lodash 库提供的 curry 函数，功能更加完善。
