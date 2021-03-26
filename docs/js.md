@@ -173,7 +173,7 @@ tips：建议阅读阮一峰的文章 [http://www.ruanyifeng.com/blog/2015/11/ci
 1. xss 攻击  
 xss攻击的本质是代码注入，利用浏览器拼接成任意的 javascript 去执行自己想做的事情。防御的方法很简单，不要相信用户的任何输入，对于用户的任何输入要进行检查、过滤和转义。
 2. csrf 攻击  
-csrf攻击是利用浏览器可以跨域发送请求，而每个 http 请求浏览器都会自动携带对应域名下的 cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。
+csrf攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，普通的表单提交和资源获取不会），而每个 http 请求浏览器都会自动携带对应域名下的 cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。
 
 ## 防抖和节流函数
 防抖：在指定的时间内不执行才会调用。例如调整浏览器窗口大小时，`resize` 次数过于频繁，但我们只需要调整完窗口后再计算，这里就可以用防抖处理。    
@@ -294,3 +294,24 @@ function curry(fn, length) {
 }
 ```
 在使用上可以使用 lodash 库提供的 curry 函数，功能更加完善。
+
+## 什么是同源政策有哪些限制
+同源策略可防止 JavaScript 发起跨域请求。源被定义为协议、主机名和端口号的组合。此策略可防止页面上的恶意脚本通过该页面的文档对象模型，访问另一个网页上的敏感数据。  
+下表给出了与 URL http://store.company.com/dir/page.html 的源进行对比的示例:
+| URL | 结果 | 原因 |
+| :-----: | :----: | :----: |
+| http://store.company.com/dir2/other.html | 同源 | 只有路径不同 |
+| https://store.company.com/secure.html | 不同源 | 协议不同 |
+| http://store.company.com:81/dir/etc.html | 不同源 | 端口不同 ( http:// 默认端口是80) |
+| http://news.company.com/dir/other.html | 不同源 | 主机不同 |
+同源政策的范围：  
+1. Cookie、LocalStorage 和 IndexDB 无法读取。
+2. DOM 无法获得。
+3. AJAX 请求不能发送。
+常见的解决办法：  
+1. jsonp ，允许 script 加载第三方资源
+2. 反向代理（nginx 服务内部配置 Access-Control-Allow-Origin *）
+3. cors 前后端协作设置请求头部，Access-Control-Allow-Origin 等头部信息
+4. iframe 嵌套通讯，postmessage  
+
+参考资料：[http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html](http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html)
