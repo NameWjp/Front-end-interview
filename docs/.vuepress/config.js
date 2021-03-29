@@ -12,6 +12,8 @@ module.exports = {
             ['/html', 'HTML'],
             ['/vue', 'Vue'],
             ['/react', 'React'],
+            ['/webpack', 'Webpack'],
+            ['/browser', '浏览器'],
             ['/http', 'HTTP'],
             ['/node', 'Node'],
             ['/arithmetic', '算法'],

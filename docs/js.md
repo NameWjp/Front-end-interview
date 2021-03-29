@@ -23,17 +23,6 @@ CommonJS 是一种模块规范，最初被应用于 Nodejs，成为 Nodejs 的�
 4. CommonJs 是动态语法可以写在判断里，ES6 Module 静态语法只能写在顶层。
 5. CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined。
 
-## 为什么浏览器的 JS 线程和 UI 线程是互斥的？
-由于 JavaScript 是可操纵 DOM 的,如果在修改这些元素属性同时渲染界面（即 JavaScript 线程和 UI 线程同时运行）,那么渲染线程前后获得的元素数据就可能不一致了。  
-比如你使用 JS 操作了 DOM，如果 JS 线程和 UI 线程是并行的，那么下一行 JS 代码获取的 DOM 相关信息很可能还没有更新，不利于编程。
-
-## Virtual Dom 的优势在哪里
-JS 线程和 UI 线程是互斥的，JS 代码调用 DOM API 必须挂起 JS 线程、转换传入参数数据、激活 UI 线程，DOM 重绘后再转换可能有的返回值，最后激活 JS 线程并继续执行。  
-若有频繁的 DOM API 调用，引擎间切换的代价将迅速积累。若其中有强制重绘的 DOM API 调用，重新计算布局、重新绘制图像会引起更大的性能消耗。  
-VDOM 的本质是一种描述真实 DOM 的数据结构，相比直接修改 DOM 有以下优点：  
-1. 虚拟 DOM 进行频繁修改，然后一次性比较并修改真实 DOM 中需要改的部分，最后在真实 DOM 中进行排版与重绘，减少过多 DOM 节点排版与重绘损耗
-2. 虚拟 DOM 有效降低大面积真实 DOM 的重绘与排版，因为最终与真实 DOM 比较差异，可以只渲染局部
-
 ## 介绍下 sku 算法的实现
 1. 构建一个 sku 数组用于渲染
 ```js
@@ -292,30 +281,40 @@ function curry(fn, length) {
     }
   };
 }
+
+// 使用
+function test(a, b) {
+    console.log(a, b)
+}
+
+curry(test)(1)(2) // 1 2
 ```
 在使用上可以使用 lodash 库提供的 curry 函数，功能更加完善。
 
-## 什么是同源政策有哪些限制
-同源策略可防止 JavaScript 发起跨域请求。源被定义为协议、主机名和端口号的组合。此策略可防止页面上的恶意脚本通过该页面的文档对象模型，访问另一个网页上的敏感数据。  
-下表给出了与 URL http://store.company.com/dir/page.html 的源进行对比的示例:
-|URL|结果|原因|
-|-|-|-|
-|http://store.company.com/dir2/other.html|同源|只有路径不同|
-|https://store.company.com/secure.html|不同源|协议不同|
-|http://store.company.com:81/dir/etc.html|不同源|端口不同( http:// 默认端口是80)|
-|http://news.company.com/dir/other.html|不同源|主机不同|
-同源政策的范围：  
-1. Cookie、LocalStorage 和 IndexDB 无法读取。
-2. DOM 无法获得。
-3. AJAX 请求不能发送。   
+## 实现 compose 函数
+compose（组合）函数特点：
++ compose 的参数是函数，返回的也是一个函数
++ 因为除了第一个函数的接受参数，其他函数的接受参数都是上一个函数的返回值，所以初始函数的参数是多元的，而其他函数的接受值是一元的
++ compsoe 函数可以接受任意的参数，所有的参数都是函数，且执行方向是自右向左的，初始函数一定放到参数的最右面
+```js
+function compose(...fns) {
+    let isFirst = true
+    return (...args) => {
+      return fns.reduceRight((result, fn) => {
+          if (!isFirst) return fn(result)
+          isFirst = false
+          return fn(...result)
+      }, args)
+    }
+}
 
-常见的解决办法：  
-1. jsonp ，允许 script 加载第三方资源
-2. 反向代理（nginx 服务内部配置 Access-Control-Allow-Origin *）
-3. cors 前后端协作设置请求头部，Access-Control-Allow-Origin 等头部信息
-4. iframe 嵌套通讯，postmessage  
-
-参考资料：[http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html](http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html)
+// 测试
+const greeting = (firstName, lastName) => 'hello, ' + firstName + ' ' + lastName
+const toUpper = str => str.toUpperCase()
+const fn = compose(toUpper, greeting)
+console.log(fn('jack', 'smith')) // HELLO, JACK SMITH
+```
+在使用上可以使用 lodash 库提供的 flowRight 函数。
 
 ## DOM 事件触发流程
 1. 捕获阶段：从父节点到目标节点
@@ -586,34 +585,7 @@ _typeof('123') // string
 |访问权限|任意窗口|任意窗口|当前页面窗口|
 |作用范围|可以设置 二级、三级 域名携带，设置二级域名会使所有匹配的三级域名携带 cookie|只能在当前域名携带|只能在当前域名携带|
 
-## HTTP 缓存
-HTTP 缓存主要分为以下两种：
-1. 强缓存
-2. 协商缓存  
-
-浏览器从请求接口到呈现页面会经过以下阶段：  
-![](./images/browser_cache.jpg)  
-两者的主要区别是使用本地缓存的时候，是否需要向服务器验证本地缓存是否依旧有效。顾名思义，协商缓存，就是需要和服务器进行协商，最终确定是否使用本地缓存。
-### 强缓存
-当浏览器向服务器发起请求时，服务器会将缓存规则放入 HTTP 响应报文的 HTTP 头中和请求结果一起返回给浏览器，控制强制缓存的字段分别是 Expires 和 Cache-Control，其中 Cache-Control 优先级比 Expires 高。
-#### Expires
-Expires 是 http1.0 提出的一个表示资源过期时间的 header，它描述的是一个绝对时间，由服务器返回。由于设置的是绝对时间，当客户端在不同的时区时，则过期时间就会发生误差。
-```
-Expires: Wed, 11 May 2018 07:20:00 GMT
-```
-#### Cache-Control
-Cache-Control 出现于 HTTP/1.1，优先级高于 Expires ,表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。
-```
-Cache-Control: max-age=300
-```
-tips: Cache-Control 的其他用法
-+ no-cache：表示在使用缓存之前，强制要求缓存把请求提交给原始服务器进行验证(协商缓存验证)。
-+ no-store：不使用任何缓存。
-+ public：表明响应可以被任何对象（包括：发送请求的客户端，代理服务器，等等）缓存，即使是通常不可缓存的内容。（例如：1.该响应没有 max-age 指令或 Expires 消息头；2.该响应对应的请求方法是 POST 。）
-+ private：表明响应只能被单个用户缓存，不能作为共享缓存（即代理服务器不能缓存它）。私有缓存可以缓存响应内容，比如：对应用户的本地浏览器。
-
-### 协商缓存
-当浏览器对某个资源的请求没有命中强缓存或者响应头 Cache-Control 设置为 `no-cache` 时，就会发一个请求到服务器，验证协商缓存是否命中，如果协商缓存命中，请求响应返回的 http 状态为 304 并且会显示一个 Not Modified 的字符串
-
-协商缓存是利用的是【Last-Modified，If-Modified-Since】和【ETag、If-None-Match】这两对Header来管理的
-[https://github.com/amandakelake/blog/issues/41](https://github.com/amandakelake/blog/issues/41)
+### 总结
+HTTP/1.1 的缓存机制对比 HTTP/1.0 的缓存机制有以下优点：  
+1. 使用相对时间设置强缓存，解决了不同时区不同客户端缓存时间不同的问题。
+2. 使用 ETag 代替 Last-Modified，解决了打开文件不修改，缓存会失效的问题。
