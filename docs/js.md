@@ -2,7 +2,7 @@
 js里采用 IEEE754 标准，采用双精度存储数值，存储结构如下。  
 ![](./images/js_number_save.png)
 由于指数最大可以偏移 Math.pow(2, 11) 位，大于最大可表示的 52 位尾数，所以最大值由尾数 52 位决定。  
-又因为尾数部分在规约形式下第一位总为 1 可以不写，所以 js 最大安全数为 Math.pow(2,53) - 1（64位浮点的后52位+被省略的1位）。
+又因为尾数部分在规约形式下第一位总为 1 可以不写，所以 js 最大安全数为 Math.pow(2,53) - 1（64位浮点的后52位+被省略的1位）。不过由于 ES6 的普及，出现了新的数据类型 BigInt，它可以表示任意大的整数，在一定程度上 js 也就没有最大安全数这个概念了。
 
 ## 为什么 0.1 + 0.2 与 0.3 不相等，如何解决
 js里采用 IEEE754 标准，采用双精度存储数值，存储结构如下。  
@@ -298,12 +298,12 @@ function curry(fn, length) {
 ## 什么是同源政策有哪些限制
 同源策略可防止 JavaScript 发起跨域请求。源被定义为协议、主机名和端口号的组合。此策略可防止页面上的恶意脚本通过该页面的文档对象模型，访问另一个网页上的敏感数据。  
 下表给出了与 URL http://store.company.com/dir/page.html 的源进行对比的示例:
-| URL | 结果 | 原因 |
-| :-----: | :----: | :----: |
-| http://store.company.com/dir2/other.html | 同源 | 只有路径不同 |
-| https://store.company.com/secure.html | 不同源 | 协议不同 |
-| http://store.company.com:81/dir/etc.html | 不同源 | 端口不同 ( http:// 默认端口是80) |
-| http://news.company.com/dir/other.html | 不同源 | 主机不同 |
+|URL|结果|原因|
+|-|-|-|
+|http://store.company.com/dir2/other.html|同源|只有路径不同|
+|https://store.company.com/secure.html|不同源|协议不同|
+|http://store.company.com:81/dir/etc.html|不同源|端口不同( http:// 默认端口是80)|
+|http://news.company.com/dir/other.html|不同源|主机不同|
 同源政策的范围：  
 1. Cookie、LocalStorage 和 IndexDB 无法读取。
 2. DOM 无法获得。
@@ -550,3 +550,38 @@ function _typeof (obj) {
 
 _typeof('123') // string
 ```
+
+## js有哪些数据类型
+1. Undefined
+2. Null
+3. Boolean
+4. Number 
+5. String
+6. Object
+7. Symbol
+8. BigInt
+
+## 内置函数(原生函数)
++ String
++ Number
++ Boolean
++ Object
++ Function
++ Array
++ Date
++ RegExp
++ Error
++ Symbol  
+
+注意像 String，Number 我们定义的时候一般不会使用 new 的方式，而是使用定义字面量的方式定义。例如 "i am string"，当我们调用它的字面量的方法时，语法编译器会自动进行装箱操作，将其包装成 String 对象，然后调用其方法，之后再进行拆箱操作将其转会字面量。
+
+## cookie、localStorage、sessionStorage区别
+|特性|cookie|localStorage|sessionStorage|
+|-|-|-|-|
+|由谁初始化|客户端或服务器，服务器可以使用`Set-Cookie`请求头|客户端|客户端|
+|数据的生命周期|一般由服务器生成，可设置失效时间。在浏览器生成，默认失效时间是关闭浏览器之后失效|永久保存，可清除|仅在当前会话有效，关闭页面后清除|
+|存放数据大小|4KB|5MB|5MB|
+|与服务器通信|每次都会携带在HTTP头中，如果使用cookie保存过多数据会带来性能问题|仅在客户端保存|仅在客户端保存|
+|用途|一般由服务器生成，用于标识用户身份|用于浏览器缓存数据|用于浏览器缓存数据|
+|访问权限|任意窗口|任意窗口|当前页面窗口|
+|作用范围|可以设置 二级、三级 域名携带，设置二级域名会将所有匹配的三级域名携带 cookie|只能在当前域名携带|只能在当前域名携带|
