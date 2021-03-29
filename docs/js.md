@@ -573,7 +573,7 @@ _typeof('123') // string
 + Error
 + Symbol  
 
-注意像 String，Number 我们定义的时候一般不会使用 new 的方式，而是使用定义字面量的方式定义。例如 "i am string"，当我们调用它的字面量的方法时，语法编译器会自动进行装箱操作，将其包装成 String 对象，然后调用其方法，之后再进行拆箱操作将其转会字面量。
+注意像 String，Number 我们定义的时候一般不会使用 new 的方式，而是使用定义字面量的方式定义。例如 "i am string"，当我们调用它的字面量的方法时，语法编译器会自动进行装箱操作，将其包装成 String 对象，然后调用其方法，之后再进行拆箱操作将其转回字面量。
 
 ## cookie、localStorage、sessionStorage区别
 |特性|cookie|localStorage|sessionStorage|
@@ -584,4 +584,36 @@ _typeof('123') // string
 |与服务器通信|每次都会携带在HTTP头中，如果使用cookie保存过多数据会带来性能问题|仅在客户端保存|仅在客户端保存|
 |用途|一般由服务器生成，用于标识用户身份|用于浏览器缓存数据|用于浏览器缓存数据|
 |访问权限|任意窗口|任意窗口|当前页面窗口|
-|作用范围|可以设置 二级、三级 域名携带，设置二级域名会将所有匹配的三级域名携带 cookie|只能在当前域名携带|只能在当前域名携带|
+|作用范围|可以设置 二级、三级 域名携带，设置二级域名会使所有匹配的三级域名携带 cookie|只能在当前域名携带|只能在当前域名携带|
+
+## HTTP 缓存
+HTTP 缓存主要分为以下两种：
+1. 强缓存
+2. 协商缓存  
+
+浏览器从请求接口到呈现页面会经过以下阶段：  
+![](./images/browser_cache.jpg)  
+两者的主要区别是使用本地缓存的时候，是否需要向服务器验证本地缓存是否依旧有效。顾名思义，协商缓存，就是需要和服务器进行协商，最终确定是否使用本地缓存。
+### 强缓存
+当浏览器向服务器发起请求时，服务器会将缓存规则放入 HTTP 响应报文的 HTTP 头中和请求结果一起返回给浏览器，控制强制缓存的字段分别是 Expires 和 Cache-Control，其中 Cache-Control 优先级比 Expires 高。
+#### Expires
+Expires 是 http1.0 提出的一个表示资源过期时间的 header，它描述的是一个绝对时间，由服务器返回。由于设置的是绝对时间，当客户端在不同的时区时，则过期时间就会发生误差。
+```
+Expires: Wed, 11 May 2018 07:20:00 GMT
+```
+#### Cache-Control
+Cache-Control 出现于 HTTP/1.1，优先级高于 Expires ,表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。
+```
+Cache-Control: max-age=300
+```
+tips: Cache-Control 的其他用法
++ no-cache：表示在使用缓存之前，强制要求缓存把请求提交给原始服务器进行验证(协商缓存验证)。
++ no-store：不使用任何缓存。
++ public：表明响应可以被任何对象（包括：发送请求的客户端，代理服务器，等等）缓存，即使是通常不可缓存的内容。（例如：1.该响应没有 max-age 指令或 Expires 消息头；2.该响应对应的请求方法是 POST 。）
++ private：表明响应只能被单个用户缓存，不能作为共享缓存（即代理服务器不能缓存它）。私有缓存可以缓存响应内容，比如：对应用户的本地浏览器。
+
+### 协商缓存
+当浏览器对某个资源的请求没有命中强缓存或者响应头 Cache-Control 设置为 `no-cache` 时，就会发一个请求到服务器，验证协商缓存是否命中，如果协商缓存命中，请求响应返回的 http 状态为 304 并且会显示一个 Not Modified 的字符串
+
+协商缓存是利用的是【Last-Modified，If-Modified-Since】和【ETag、If-None-Match】这两对Header来管理的
+[https://github.com/amandakelake/blog/issues/41](https://github.com/amandakelake/blog/issues/41)
