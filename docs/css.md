@@ -25,4 +25,5 @@
   font-size: 16px;
 }
 ```
-通过设置 vertical-align:middle 对文字和图片进行垂直居中时，父元素需要设置 font-size: 0，因为 vertical-align:middle 是将子元素的中点与父元素的 `baseline + x-height / 2` 的位置进行对齐的，设置字号为 0 可以保证让这些线的位置都重合在中点。
+通过设置 vertical-align:middle 对文字和图片进行垂直居中时，父元素需要设置 font-size: 0，因为 vertical-align:middle 是将子元素的中点与父元素的 `baseline + x-height / 2` 的位置进行对齐的，设置字号为 0 可以保证让这些线的位置都重合在中点。  
+推荐文章：[https://segmentfault.com/a/1190000023944126](https://segmentfault.com/a/1190000023944126)
