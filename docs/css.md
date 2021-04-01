@@ -29,3 +29,37 @@
 ```
 通过设置 vertical-align:middle 对文字和图片进行垂直居中时，父元素需要设置 font-size: 0，因为 vertical-align:middle 是将子元素的中点与父元素的 `baseline + x-height / 2` 的位置进行对齐的，设置字号为 0 可以保证让这些线的位置都重合在中点。  
 推荐文章：[https://segmentfault.com/a/1190000023944126](https://segmentfault.com/a/1190000023944126)
+
+
+
+## 文本超出部分显示省略号
+### 单行
+```css
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+```
+### 多行（需要 webkit 内核浏览器的支持）
+```css
+display: -webkit-box;
+-webkit-box-orient: vertical;
+-webkit-line-clamp: 3; // 最多显示几行
+overflow: hidden;
+```
+
+
+
+## 什么是 BFC
+块格式化上下文（Block Formatting Context，BFC） 是 Web 页面的可视 CSS 渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。BFC元素特性表现为，内部子元素再怎么翻江倒海，翻云覆雨都不会影响外部的元素。常用来避免 margin 穿透、清除浮动等问题。触发 BFC 的常用方法如下：
++ float 的值不为 none。
++ overflow的值为 auto, scroll 或 hidden。
++ display的值为 table-cell, table-caption, inline-block 中的任何一个。
++ position的值不为 relative 和 static。
+
+
+
+## css 作用域隔离方法
++ 命名空间，加不同的前缀
++ module，例如 vue 的 scoped，css-loader 的 modules 模式
++ css-in-js，直接写成内联样式
++ Shadow DOM，其实就是 web components，作用域隔离
