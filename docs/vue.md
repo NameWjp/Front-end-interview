@@ -17,12 +17,17 @@ dom 挂载，但是 dom 中存在类似 {{ xxx }} 的占位符，并没有替换
 如果组件被 keep-alive 包裹，第一次渲染会在 mounted 钩子后面调用 activated 钩子，离开的时候不会调用 beforeDestroy 和 destroyed 钩子，而是调用 deactivated 钩子，等到再切换回来的时候，activated 钩子会调用（不会再走 mounted 钩子）。
 8. errorCaptured  
 用于捕获子组件中抛出的错误，注意只有 errorCaptured 返回 false 则可以阻止错误继续向上传播（本质上是说“这个错误已经被搞定了且应该被忽略”）。
+
+
+
 ## Vue 响应式原理
 ![](./images/vue_init_process.png)  
 Vue 的初始化如图所示，在执行 Observer 的时候会给 data 中的每个对象和数组添加一个 `__ob__` 属性，其中有一个 dep 属性，dep 是类 Dep 的实例，而 Dep 类内部实现了一套发布订阅的模式。之后又会递归遍历 data 中的对象和数组，将对象的 key 全部通过 Object.defineProperty 定义，拦截对象的 get 和 set，在 get 中通过 depend（这里在源码里有点绕，其实是先调用 dep 的 depend 方法，该方法会调用当前 watcher 的 addDep 方法，并将当前 dep 传过去，watcher 的 addDep 实际就是执行了 dep 的 addSub 方法将自己 push 进去） 将当前 watcher（后面解释它的意义）push 到一个数组中，完成了订阅。set 中通过遍历之前的数组，触发每个 watcher 的 update，从而派发更新。对于数组，由于数组是引用类型，对数组的 push 等方法并不会触发对象的 set，这里采用的是代理模式，拦截数组的原型，在 push 等改变数组方法调用时，手动派发更新。
 `__ob__`属性如下：  
 ![](./images/vue_ob_data.png)  
 最后说下 Watcher，在 Vue 中 watcher 有三种：render watcher/ computed watcher/ user watcher(就是vue方法中的那个watch)，Watcher 类的作用是 vm 实例和 Observer 的桥梁，负责管理 dep，vm 等。比如 Observer 的 set 方法触发了 watcher 的 update 去更新， watcher 的 update 会调用 vm 的 _update 从而更新视图。
+
+
 
 ## Vue3 和 Vue2 的区别
 Vue3 除了性能提升外，相比 Vue2 有以下特点：  
@@ -33,6 +38,8 @@ Vue3 除了性能提升外，相比 Vue2 有以下特点：
 在 Vue3 Composition API 中，代码是根据逻辑功能来组织的，一个功能的所有 api 会放在一起（高内聚，低耦合），这样做，即时项目很大，功能很多，都能快速的定位到这个功能所用到的所有 API。提高可读性和可维护性，而且基于函数组合的 API 更好的重用逻辑代码（和 React 的 Hooks 类似）。
 3. 全面支持 TypeScript  
 内部采用 TypeScript 重写，并在工具链上提供对 TypeScript 的支持。
+
+
 
 ## Vue 和 React 的区别是什么
 设计理念不同，React 强调数据的不可变（immutable），而 Vue 的数据是可变的，通过 getter/setter 以及一些函数的劫持，能精确知道数据变化。比如改变一个对象属性的值，在 Vue 可以直接修改，而在 React 需要拿一个新对象替换旧对象。使用不可变有以下好处：  
@@ -57,6 +64,8 @@ function touchAndLog(touchFn) {
 
 当然两种框架由于设计理念的不同，走上了不同的道路，没有高低优劣之分。个人感觉 vue 在官方支持上面比 react 更好，包括路由，状态管理等，都是由官方维护，且都有详细的文档。但 react 更加灵活，且比较纯粹，但是有许多问题都是由社区来解决，所以会有五花八门的库，选择和学习上会有一定困难。其实 vue3 出来后，和 react 在灵活性上已经差不多了，Composition API 和 Hooks 思路是一样的，大家根据自己的爱好合理选择即可。  
 另外推荐一篇文章：[http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/](http://hcysun.me/2018/01/05/%E6%8E%A2%E7%B4%A2Vue%E9%AB%98%E9%98%B6%E7%BB%84%E4%BB%B6/) 关于 vue2 中高阶组件的实现。  
+
+
 
 ## Vue 父子组件生命周期执行顺序
 
@@ -86,6 +95,8 @@ parent destroyed
 ```
 注意 `mounted` 不会保证所有的子组件也都一起被挂载，因为可能有异步组件的存在。
 
+
+
 ## vue-router原理
 简单的说，vue-router 的原理就是通过监听 URL 地址的变化，从注册的路由中渲染相应的组件。根据类型分为 hash 模式和 history 模式。hash 模式实现原理是基于 `window.location.hash` 来获取对应的 hash 值，改变 hash 值并不会刷新页面。history 模式依赖于 `history` 提供的接口，例如 `history.pushState` 可以修改 url 但并不会刷新页面，但如果此时用户手动刷新页面，如果服务器没有配置 url 对应的资源，则会返回 404，常见的写法如下（nginx 配置）：
 ```
@@ -95,8 +106,12 @@ location /es6/ {
 }
 ```
 
+
+
 ## vuex原理
 vuex 的内部会初始化一个 store 实例（store 内部会实例化一个 vue 实例 vm 用于响应式处理，vuex 和 vue 强关联），之后会将 store 实例挂载到所有组件中，这样所有组件引用的都是同一个 store 实例。访问 store 实例里的数据会被代理到内部的 vm 实例上，这样一旦修改了 store 实例的数据，vm 便会通知所有视图更新数据。
+
+
 
 ## Vue 中的 key 的作用
 组件中 key 是用来标识组件（React 同理）。在 Vue 进行更新的时候会进行新旧 VNode 节点的对比，如果 key 不相同，会直接销毁旧的 vnode，渲染新的 vnode。如果 key 相同则会更新复用 vnode。  
@@ -106,6 +121,8 @@ vuex 的内部会初始化一个 store 实例（store 内部会实例化一个 v
 
 比较好的做法是使用 id 作为 key，如果没有 id，则在获取到列表的时候通过某种规则为它们创建一个 key，并保证这个 key 在组件整个生命周期中都保持稳定。  
 推荐链接：[https://juejin.cn/post/6844904113587634184](https://juejin.cn/post/6844904113587634184)
+
+
 
 ## Virtual Dom 的优势在哪里
 JS 线程和 UI 线程是互斥的，JS 代码调用 DOM API 必须挂起 JS 线程、转换传入参数数据、激活 UI 线程，DOM 重绘后再转换可能有的返回值，最后激活 JS 线程并继续执行。  

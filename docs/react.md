@@ -19,6 +19,8 @@ export default withA(
 Render Props 也一样，这两种模式都会限制你的组件结构，随着功能的增加，包裹的层数越来越多，陷入所谓的 `wrapper hell` 之中。  
 Hooks 的出现是一种全新的写法，抛弃了类，使用函数来写组件。但由于函数没法保存状态，react 引入了 `useState` 等 API 来帮助我们保留状态。其中的原理是 react 会根据 `useState` 的调用顺序来在内部保留状态，所以 Hooks 有一个重要的规则，只能在最顶层使用 Hooks。使用 Hooks 编写的代码没有「嵌套地狱」，组织代码粒度更细，相关逻辑代码紧密，提升了组件的内聚性，减少了维护成本。
 
+
+
 ## react 的生命周期有哪些？
 react 生命周期图谱如下：
 ![](./images/react_lifecycle.png)
