@@ -17,6 +17,7 @@ module.exports = {
             ['/http', 'HTTP'],
             ['/node', 'Node'],
             ['/arithmetic', '算法'],
+            ['/safe', '前端安全'],
             ['/other', '其他'],
         ],
         displayAllHeaders: true,
