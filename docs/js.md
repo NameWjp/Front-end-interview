@@ -583,7 +583,7 @@ purpose: prefetch
 
 
 ## defer 和 async 的区别
-defer 的执行时间是在所有元素解析完成之后，DOMContentLoaded 事件触发之前。
+defer 的执行时间是在所有元素解析完成之后，DOMContentLoaded 事件触发之前。多个 defer 定义的 js 会按照它们的引入顺序执行。
 
 async 的执行时间是在当前 JS 脚本下载完成后，所以多个 async script 是执行顺序是不固定的。async只能用于加载一些独立无依赖的代码。
 

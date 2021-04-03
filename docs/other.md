@@ -29,3 +29,12 @@
 
 这样，app2 系统不需要走登录流程，就已经是登录了。SSO，app 和 app2 在不同的域，它们之间的 session 不共享也是没问题的。  
 参考链接：[https://developer.aliyun.com/article/636281](https://developer.aliyun.com/article/636281)
+
+
+
+## 正则表达式
+笔记如下：
+<div align="center">
+  <img src="./images/RegExp_1.jpg" width="600" />
+  <img src="./images/RegExp_2.jpg" width="600" />
+</div>
