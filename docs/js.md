@@ -1,4 +1,4 @@
-## js里的最大安全数是多少，为什么
+## javascript 里的最大安全数是多少，为什么
 js里采用 IEEE754 标准，采用双精度存储数值，存储结构如下。  
 ![](./images/js_number_save.png)
 由于指数最大可以偏移 Math.pow(2, 11) 位，大于最大可表示的 52 位尾数，所以最大值由尾数 52 位决定。  
@@ -420,7 +420,7 @@ f();
 
 
 
-## js 里的类型判断
+## javascript 里的类型判断
 1. typeof 操作符  
 使用 typeof 判断基本类型是可以的，但是引用类型都会返回 object
 ```js
@@ -465,7 +465,7 @@ _typeof('123') // string
 
 
 
-## js有哪些数据类型
+## javascript 有哪些数据类型
 1. Undefined
 2. Null
 3. Boolean
@@ -723,3 +723,65 @@ class Event {
     }
 })()
 ```
+
+
+
+## javascript 事件循环
+javascript 是一门单线程的语言，会将执行的代码分为 `宏任务` 和 `微任务`。不同的代码会被推到不同的任务队列里，浏览器执行的过程中会先执行 `宏任务` 中的代码，执行完后会再执行 `微任务` 里的代码，执行完后再执行 `宏任务` 里的代码，依次类推，如下图：  
+![](./images/js_event.png)
+### 宏任务
+|类型|浏览器|Node|
+|-|-|-|
+|I/O|✅|✅|
+|setTimeout|✅|✅|
+|setInterval|✅|✅|
+|setImmediate|❌|✅|
+|requestAnimationFrame|✅|❌|
+### 微任务
+|类型|浏览器|Node|
+|-|-|-|
+|process.nextTick|❌|✅|
+|MutationObserver|✅|❌|
+|Promise.then catch finally|✅|✅|
+### 总结
+有一道测试题如下:
+```js
+console.log('1');
+
+setTimeout(function() {
+    console.log('2');
+    process.nextTick(function() {
+        console.log('3');
+    })
+    new Promise(function(resolve) {
+        console.log('4');
+        resolve();
+    }).then(function() {
+        console.log('5')
+    })
+})
+process.nextTick(function() {
+    console.log('6');
+})
+new Promise(function(resolve) {
+    console.log('7');
+    resolve();
+}).then(function() {
+    console.log('8')
+})
+
+setTimeout(function() {
+    console.log('9');
+    process.nextTick(function() {
+        console.log('10');
+    })
+    new Promise(function(resolve) {
+        console.log('11');
+        resolve();
+    }).then(function() {
+        console.log('12')
+    })
+})
+```
+结合上面的知识点，结果为：1，7，6，8，2，4，3，5，9，11，10，12。  
+这里需要注意的是在 setTimeout 回调执行完后会被认为一个 `宏任务` 执行结束，会去检测 `微任务` 队列，等 `微任务` 队列执行完后会再去检测 `宏任务` 队列（也就是说每一个 setTimeout 回调执行后就会看看是否有 `微任务` 有的话就执行）。
