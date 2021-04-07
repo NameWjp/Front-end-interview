@@ -63,7 +63,7 @@
 ### git rebase
 例如我们当前的分支情况如下图:  
 ![](./images/git_3.png)  
-在 master 分支执行 git rebase dev 会以当前分支与 dev 分支分开的点开始（3311ba0），抹去当前分支的提交，依次生成合并后的提交，如下图：  
+在 master 分支执行 git rebase dev 会以当前分支与 dev 分支分开的点开始（3311ba0），抹去之后的的提交，依次生成合并后的提交，如下图：  
 ![](./images/git_4.png)  
 ### 总结
 如果你想要一个干净的，没有 merge commit 的线性历史树，那么你应该选择 git rebase  
