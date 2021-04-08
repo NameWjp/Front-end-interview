@@ -219,7 +219,7 @@ console.log(fn('jack', 'smith')) // HELLO, JACK SMITH
 ## target 和 currentTarget 区别
 + event.target  
 返回触发事件的元素（例如用户点击时会返回点击位置最底层的 dom 元素）
-+ event.currentTarget
++ event.currentTarget  
 返回绑定事件的元素
 
 
