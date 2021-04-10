@@ -56,3 +56,23 @@ package-lock.json 的出现是为了解决不同情况下安装包不一致的�
 + 如果用户没有显式依赖核心库，则按照插件 `peerDependencies` 中声明的版本将库安装到项目根目录中；  
 
 注意，这里由于根据 `peerDependencies` 定义了 a 的版本，其它依赖于 a 的库有可能因为版本不兼容报错，这个时候就需要人为去排查原因。
+
+
+
+## require 原理
+当 Node 遇到 require(X) 时，按下面的顺序处理。
+1. 如果 X 是内置模块（比如 require('http'）)  
+a. 返回该模块。  
+b. 不再继续执行。  
+2. 如果 X 以 "./" 或者 "/" 或者 "../" 开头  
+a. 根据 X 所在的父模块，确定 X 的绝对路径。  
+b. 将 X 当成文件，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。  
+`X`、`X.js`、`X.json`、`X.node`  
+c. 将 X 当成目录，依次查找下面文件，只要其中有一个存在，就返回该文件，不再继续执行。  
+`X/package.json（main字段）`、`X/index.js`、`X/index.json`、`X/index.node`  
+3. 如果 X 不带路径  
+a. 根据 X 所在的父模块，确定 X 可能的安装目录（名称为 node_modules）。  
+b. 依次在每个目录中，将 X 当成文件名或目录名加载。  
+4. 抛出 "not found"
+
+参考资料：[http://www.ruanyifeng.com/blog/2015/05/require.html](http://www.ruanyifeng.com/blog/2015/05/require.html)
