@@ -15,7 +15,26 @@ js里采用 IEEE754 标准，采用双精度存储数值，存储结构如下。
 0.2 -> 0.0011001100110011...(无限循环)
 ```
 所以必然会存在精度丢失的问题。  
-解决方法：写一个公共方法，在计算的时候将 0.1 等小数转化整数，运算完成后再将其转化成小数。
+解决方法：写一个公共方法，在计算的时候将 0.1 等小数转化整数，运算完成后再将其转化成小数。或者使用一些计算库，例如：[number-precision](https://github.com/nefe/number-precision)
+
+
+
+## 小数四舍五入问题
+在使用 toFixed 去四舍五入的时候会出现一些奇怪的问题如下：  
+![](./images/js_round.png)  
+实际上，tofixed函数对于四舍五入的规则与数学中的规则不同，使用的是银行家舍入规则：其实是一种四舍六入五取偶（又称四舍六入五留双）法。表现为：  
+> 四舍六入五考虑，五后非零就进一，五后为零看奇偶，五前为偶应舍去，五前为奇要进一。
+
+很显然，这并不是我们想要的结果。但是 Math.round 方法，就是我们所熟知的四舍五入规则，我们可以利用该方法扩展到小数位的四舍五入，具体实现如下：  
+> 对小数乘以10的n次幂，再用Math.round取整，再除以10的n次幂，就能得到进过四舍五入后的指定小数位了。
+
+这里我封装一个四舍五入的方法
+```js
+function roundFloat (value, decimal = 2) {
+  const n = Math.pow(10, decimal);
+  return (Math.round(value * n) / n).toFixed(decimal);
+}
+```
 
 
 
@@ -97,7 +116,7 @@ function throttle(fn, delay) {
 ## async 和 Generator 的关系，如何使用 Generator 实现 async
 async 语法是内置自动执行器的 Generator 的语法糖。  
 利用 `Generator` 实现 `async/await` 主要就是用一个函数（自动执行器）来包装 `Generator`，从而实现自动执行 `Generator`。  
-每次执行 `next()` 返回的 `{ value, done }` 中的 value 是一个 Promise，所以要等它执行完毕后再执行下一次 `next()`，即在它的后面加一个 `then()` 函数，并且在 `then()` 函数中执行 next()。  
+每次执行 `next()` 返回的 `{ value, done }` 中的 value 是一个 Promise，所以要等它执行完毕后再执行下一次 `next()`，即在它的后面加一个 `then()` 函数，并且在 `then()` 函数中执行 `next()`。  
 ```js
 function t(data) {
   return new Promise(r => setTimeout(() => r(data), 100))
