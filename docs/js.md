@@ -238,7 +238,7 @@ console.log(fn('jack', 'smith')) // HELLO, JACK SMITH
 ## target 和 currentTarget 区别
 + event.target  
 返回触发事件的元素（例如用户点击时会返回点击位置最底层的 dom 元素）
-+ event.currentTarget
++ event.currentTarget  
 返回绑定事件的元素
 
 
@@ -527,7 +527,7 @@ _typeof('123') // string
 
 ## 请简述 JavaScript 中的 this
 this 取值符合以下规则： 
-1. 在调用函数时使用new关键字，函数内的this是一个全新的对象。
+1. 在调用函数时使用 new 关键字，函数内的 this 是一个全新的对象。
 2. 如果 apply、call 或 bind 方法用于调用、创建一个函数，函数内的 this 就是作为参数传入这些方法的对象。
 3. 当函数作为对象里的方法被调用时，函数内的 this 是调用该函数的对象。比如当 `obj.method()` 被调用时，函数内的 this 将绑定到 obj 对象。
 4. 如果调用函数不符合上述规则，那么 this 的值指向全局对象（global object）。浏览器环境下 this 的值指向 window 对象，但是在严格模式下('use strict')，this 的值为 undefined。
