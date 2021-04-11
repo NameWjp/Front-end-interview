@@ -34,7 +34,7 @@ Vue3 除了性能提升外，相比 Vue2 有以下特点：
 1. 使用 Proxy 替代 Object.defineProperty  
 替换之后对象或数组可以在没有提前定义 key 的情况下直接赋值。（Object.defineProperty 需要提前知道 key 才能拦截这个 key 的访问，而 Proxy 是直接拦截整个对象的访问）
 2. 增加 Composition API  
-在vue2中我们会在一个 vue 文件中 data，methods，computed，watch 中定义属性和方法，共同处理页面逻辑。一个功能往往需要在不同的vue配置项中定义属性和方法，比较分散。即使通过 Mixins 重用逻辑代码，也容易发生命名冲突且关系不清。  
+在 vue2 中我们会在一个 vue 文件中 data，methods，computed，watch 中定义属性和方法，共同处理页面逻辑。一个功能往往需要在不同的vue配置项中定义属性和方法，比较分散。即使通过 Mixins 重用逻辑代码，也容易发生命名冲突且关系不清。  
 在 Vue3 Composition API 中，代码是根据逻辑功能来组织的，一个功能的所有 api 会放在一起（高内聚，低耦合），这样做，即时项目很大，功能很多，都能快速的定位到这个功能所用到的所有 API。提高可读性和可维护性，而且基于函数组合的 API 更好的重用逻辑代码（和 React 的 Hooks 类似）。
 3. 全面支持 TypeScript  
 内部采用 TypeScript 重写，并在工具链上提供对 TypeScript 的支持。
@@ -98,13 +98,14 @@ parent destroyed
 
 
 ## vue-router原理
-简单的说，vue-router 的原理就是通过监听 URL 地址的变化，从注册的路由中渲染相应的组件。根据类型分为 hash 模式和 history 模式。hash 模式实现原理是基于 `window.location.hash` 来获取对应的 hash 值，改变 hash 值并不会刷新页面。history 模式依赖于 `history` 提供的接口，例如 `history.pushState` 可以修改 url 但并不会刷新页面，但如果此时用户手动刷新页面，如果服务器没有配置 url 对应的资源，则会返回 404，常见的写法如下（nginx 配置）：
+简单的说，vue-router 的原理就是通过监听 URL 地址的变化，从注册的路由中渲染相应的组件。根据类型分为 hash 模式和 history 模式。hash 模式实现原理是基于 `window.location.hash` 来获取对应的 hash 值，改变 hash 值并不会刷新页面，通过监听 `onhashchange` 事件来获取用户改变 hash 的行为。history 模式依赖于 `history` 提供的接口，例如 `history.pushState` 可以修改 url 但并不会刷新页面，每次触发 history.back() 或者浏览器的后退按钮等，会触发一个 `popstate` 事件（history.pushState 和 history.replaceState 方法并不会触发 popstate 事件，解决办法是创建自定义事件，详见参考链接），通过监听该事件可以获取用户改变 url 的行为。但 history 模式有一个缺点，如果用户手动刷新页面，如果服务器没有配置 url 对应的资源，则会返回 404，常见的写法如下（nginx 配置）：
 ```
 location /es6/ {
   try_files $uri $uri/ /es6/index.html;
   index index.html;
 }
 ```
+参考链接：[https://segmentfault.com/a/1190000017560688](https://segmentfault.com/a/1190000017560688)
 
 
 
