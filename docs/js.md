@@ -151,7 +151,7 @@ function async(generator) {
 
       Promise.resolve(next.value).then(
         (val) => step(() => gen.next(val)), // 通过 next(val) 将 val 传给 yield 后面的变量 
-        (err) => step(() => gen.trhow(err)),
+        (err) => step(() => gen.throw(err)),
       )
     }
 
