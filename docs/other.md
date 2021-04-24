@@ -130,3 +130,25 @@ location [ = | ~ | ~* | ^~ | !~ | !~* ] /uri/ { … }
 + 当有匹配成功时候，停止匹配，按当前匹配规则处理请求
 
 匹配的时候依照最佳匹配规则，按照能匹配到的最多的规则进行匹配，如 location ^~ /test/react/ 和 location ^~ /test/，请求 http://localhost/test/react/react.dev.js，会匹配 location /test/react/
+
+### 负载均衡配置
+```
+http {
+  #在http字段添加
+  upstream servers.mydomain.com {
+    server 192.168.2.3:80;
+    server 192.168.2.4:80; 
+    ip_hash;  #nginx 的 upstream 目前支持 ip_hash 模式，每个请求按访问 ip 的 hash 结果分配，这样每个访客固定访问一个后端服务器，可以解决 session 的问题。
+  }
+  server{ 
+    listen 80; 
+    server_name www.mydomain.com; 
+    location / {
+      proxy_pass http://servers.mydomain.com; 
+      proxy_set_header Host $host; 
+      proxy_set_header X-Real-IP $remote_addr; 
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+    } 
+  } 
+}
+```
