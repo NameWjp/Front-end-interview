@@ -19,10 +19,32 @@ dom 挂载，但是 dom 中存在类似 {{ xxx }} 的占位符，并没有替换
 用于捕获子组件中抛出的错误，注意只有 errorCaptured 返回 false 则可以阻止错误继续向上传播（本质上是说“这个错误已经被搞定了且应该被忽略”）。
 
 
-
+会给 data 中的每个对象和数组添加一个 `__ob__` 属性，其中有一个 dep 属性，dep 是类 Dep 的实例，而 Dep 类内部实现了一套发布订阅的模式。之后又
 ## Vue 响应式原理
 ![](./images/vue_init_process.png)  
-Vue 的初始化如图所示，在执行 Observer 的时候会给 data 中的每个对象和数组添加一个 `__ob__` 属性，其中有一个 dep 属性，dep 是类 Dep 的实例，而 Dep 类内部实现了一套发布订阅的模式。之后又会递归遍历 data 中的对象和数组，将对象的 key 全部通过 Object.defineProperty 定义，拦截对象的 get 和 set，在 get 中通过 depend（这里在源码里有点绕，其实是先调用 dep 的 depend 方法，该方法会调用当前 watcher 的 addDep 方法，并将当前 dep 传过去，watcher 的 addDep 实际就是执行了 dep 的 addSub 方法将自己 push 进去） 将当前 watcher（后面解释它的意义）push 到一个数组中，完成了订阅。set 中通过遍历之前的数组，触发每个 watcher 的 update，从而派发更新。对于数组，由于数组是引用类型，对数组的 push 等方法并不会触发对象的 set，这里采用的是代理模式，拦截数组的原型，在 push 等改变数组方法调用时，手动派发更新。
+Vue 的初始化如图所示，在执行 Observer 的时候会递归遍历 data 中的对象和数组，将对象的 key 全部通过 Object.defineProperty 定义，重新拦截对象的 get 和 set，内部会通过闭包引用一个 dep，在 get 中通过 depend 将当前的渲染 watcher push 到 dep 中的数组中，完成订阅。在 set 中通过遍历之前的数组，触发每个渲染 watcher 的 update，从而派发更新。对于数组，采用的是代理模式，拦截数组的原型，在 push 等改变数组方法调用时，手动派发更新。  
+另外在 data 中每个对象和数组都会有一个  `__ob__` 属性，里面保存的是一个 dep 实例。为什么需要这个属性呢？因为在 es5 中有些情况我们没法检测到变化，例如对象属性的增减，所以这里我们需要提前收集与这个对象有关的 watcher 信息，在用户手动调用 `$set` 方法时去派发更新，相关代码如下：  
+```js
+let childOb = !shallow && observe(val)
+Object.defineProperty(obj, key, {
+  enumerable: true,
+  configurable: true,
+  get: function reactiveGetter () {
+    const value = getter ? getter.call(obj) : val
+    if (Dep.target) {
+      dep.depend()
+      // 这里就是提前收集相关 watcher 的地方
+      if (childOb) {
+        childOb.dep.depend()
+        if (Array.isArray(value)) {
+          dependArray(value)
+        }
+      }
+    }
+    return value
+  },
+);
+```
 `__ob__`属性如下：  
 ![](./images/vue_ob_data.png)  
 最后说下 Watcher，在 Vue 中 watcher 有三种：render watcher/ computed watcher/ user watcher(就是vue方法中的那个watch)，Watcher 类的作用是 vm 实例和 Observer 的桥梁，负责管理 dep，vm 等。比如 Observer 的 set 方法触发了 watcher 的 update 去更新， watcher 的 update 会调用 vm 的 _update 从而更新视图。
