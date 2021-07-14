@@ -18,8 +18,6 @@ dom 挂载，但是 dom 中存在类似 {{ xxx }} 的占位符，并没有替换
 8. errorCaptured  
 用于捕获子组件中抛出的错误，注意只有 errorCaptured 返回 false 则可以阻止错误继续向上传播（本质上是说“这个错误已经被搞定了且应该被忽略”）。
 
-
-会给 data 中的每个对象和数组添加一个 `__ob__` 属性，其中有一个 dep 属性，dep 是类 Dep 的实例，而 Dep 类内部实现了一套发布订阅的模式。之后又
 ## Vue 响应式原理
 ![](./images/vue_init_process.png)  
 Vue 的初始化如图所示，在执行 Observer 的时候会递归遍历 data 中的对象和数组，将对象的 key 全部通过 Object.defineProperty 定义，重新拦截对象的 get 和 set，内部会通过闭包引用一个 dep，在 get 中通过 depend 将当前的渲染 watcher push 到 dep 中的数组中，完成订阅。在 set 中通过遍历之前的数组，触发每个渲染 watcher 的 update，从而派发更新。对于数组，采用的是代理模式，拦截数组的原型，在 push 等改变数组方法调用时，手动派发更新。  
