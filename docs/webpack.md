@@ -32,12 +32,18 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 1. 压缩代码
 2. 使用 contenthash 作为文件名称的一部分，利于浏览器缓存
 3. tree-shaking  
-tree-shaking 会将没有使用的模块移除，所以你自己要保证移除模块是无副作用的，开启 tree-shaking 步骤如下：  
+tree-shaking 会将没有使用的模块移除，开启 tree-shaking 步骤如下：  
 首先需要在 babel 配置中 modules 设置为 false，这样 babel 就不会将我们写的 es6 Module 的导入方式进行转换（tree-shaking 依赖 es6 的 Module 语法）。  
-接着设置 webpack 的 mode 为 development。  
-最后在 package.json 文件的 sideEffects 字段标记哪些文件是 side-effect-free(无副作用)。  
+接着设置 webpack 的 mode 为 development 即可开启 tree-shaking。  
+需要注意的是，如果你使用的包不支持 tree-shaking，那么你也是没法 tree-shaking 的。
 4. 分割代码，将第三方插件或公共代码单独提取出来打包
 5. 异步模块，按需加载（例如 Vue 路由懒加载）
+
+
+
+## webpack 的 side-effect-free 字段的作用
+当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段标记是用来标记哪些文件是 side-effect-free（无副作用），一般用于库开发者标记自己的库是否是无副作用的（注意，一旦标记为无副作用，即使你代码中有副作用代码，webpack 也会 tree-shaking 掉，省去了 webpack 的一些静态语法分析的步骤），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。  
+参考链接：[Webpack 中的 sideEffects 到底该怎么用](https://zhuanlan.zhihu.com/p/40052192)
 
 
 
