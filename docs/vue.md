@@ -151,3 +151,32 @@ JS 线程和 UI 线程是互斥的，JS 代码调用 DOM API 必须挂起 JS 线
 VDOM 的本质是一种描述真实 DOM 的数据结构，相比直接修改 DOM 有以下优点：  
 1. 虚拟 DOM 进行频繁修改，然后一次性比较并修改真实 DOM 中需要改的部分，最后在真实 DOM 中进行排版与重绘，减少过多 DOM 节点排版与重绘损耗
 2. 虚拟 DOM 有效降低大面积真实 DOM 的重绘与排版，因为最终与真实 DOM 比较差异，可以只渲染局部
+
+
+
+## vue1 中的 DocumentFragement 有什么作用
+文档碎片主要的作用是用来提高页面性能，考虑如下问题：在 document.body 中添加 100 个 span
+```js
+for(var i = 0; i < 100; i++) { 
+  var op = document.createElement("span"); 
+  var oText = document.createTextNode(i); 
+  op.appendChild(oText); 
+  document.body.appendChild(op); 
+} 
+```
+这样写性能就会很差，不断的向 body 中插入元素会导致页面不断的触发重排，发生页面卡顿的现象。当然你也可以新建一个 div 将 span 都放到 div 中，最后再将 div 插入到 body 中，但这样 dom 中会多出一个 div 节点。更好的做法是使用 createDocumentFragment 创建一个文档碎片节点，将 span 临时放入碎片节点中，最后一次性插入到 body:
+```js
+//先创建文档碎片
+var oFragmeng = document.createDocumentFragment(); 
+
+for(var i = 0; i < 100; i++) { 
+  var op = document.createElement("span"); 
+  var oText = document.createTextNode(i); 
+  op.appendChild(oText); 
+  //先附加在文档碎片中
+  oFragmeng.appendChild(op);  
+} 
+
+//最后一次性添加到document中
+document.body.appendChild(oFragmeng); 
+```
