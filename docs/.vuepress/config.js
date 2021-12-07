@@ -8,6 +8,7 @@ module.exports = {
         sidebar: [
             ['/', '简介'],
             ['/js', 'JavaScript'],
+            ['/typescript', 'TypeScript'],
             ['/css', 'CSS'],
             ['/html', 'HTML'],
             ['/vue', 'Vue'],
