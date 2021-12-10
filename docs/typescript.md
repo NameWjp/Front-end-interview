@@ -56,4 +56,30 @@ type Window = {
 
 // Error: Duplicate identifier 'Window'.
 ```
-另外一方面，从语义的角度来说，interface是接口，type是类型，本身就是两个概念。如果你希望定义一个变量类型，就应该用 type，如果希望是能够继承并约束的，就用 interface。例如一个类应该是 implements 一个 interface 而不是 type。
+在处理交叉类型的情况，两者也不相同：
+```ts
+interface Colorful {
+  color: string;
+}
+
+interface ColorfulSub extends Colorful {
+  color: number
+}
+
+// Interface 'ColorfulSub' incorrectly extends interface 'Colorful'.
+// Types of property 'color' are incompatible.
+// Type 'number' is not assignable to type 'string'.
+```
+使用继承的方式，如果重写类型会导致编译错误，但交叉类型不会：
+```ts
+interface Colorful {
+  color: string;
+}
+
+type ColorfulSub = Colorful & {
+  color: number
+}
+```
+虽然不会报错，那 color 属性的类型是什么呢，答案是 never，取得是 string 和 number 的交集。
+
+另外一方面，从语义的角度来说，interface是接口，type是类型，本身就是两个概念。如果你希望定义一个变量类型，就应该用 type。如果有明确的继承关系或表约束的，就用 interface。例如一个类应该是 implements 一个 interface 而不是 type。
