@@ -19,6 +19,7 @@ module.exports = {
             ['/node', 'Node'],
             ['/arithmetic', '算法'],
             ['/safe', '前端安全'],
+            ['/optimize', '前端优化'],
             ['/other', '其他'],
         ],
         displayAllHeaders: true,

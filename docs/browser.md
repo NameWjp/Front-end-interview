@@ -50,3 +50,14 @@ Content-Type：只限于三个值 application/x-www-form-urlencoded、 multipart
 凡是不满足简单请求的 ajax 请求都是非简单请求，例如 Content-Type 为 application/json 的 POST 请求。对于非简单请求，浏览器会在正式通信之前，增加一次 HTTP 查询请求，称为 "预检" 请求，预请求的方法是 OPTIONS，同时也会在请求头添加 Origin 字段。服务器会返回一个正常的 HTTP 响应，如果浏览器发现，这个回应的头信息没有包含 Access-Control-Allow-Origin 字段（也有其他的效验字段），或者 Origin 不在 Access-Control-Allow-Origin 字段定义的范围内，就会抛出一个错误，被 XMLHttpRequest 的 onerror 回调函数捕获，同时不会再发送请求。如果效验通过了，则会重新发送真正的请求，返回服务器的内容。
 
 参考资料：[https://www.ruanyifeng.com/blog/2016/04/cors.html](https://www.ruanyifeng.com/blog/2016/04/cors.html)
+
+
+
+## 在浏览器输入 URL 回车之后发生了什么
+1. URL 解析
+2. DNS 查询
+3. 建立 TCP 连接，三次握手
+4. 服务器处理请求
+5. 浏览器接受请求，渲染页面
+
+详细解析参考：[https://zhuanlan.zhihu.com/p/80551769](https://zhuanlan.zhihu.com/p/80551769)
