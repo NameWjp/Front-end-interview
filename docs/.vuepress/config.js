@@ -8,6 +8,7 @@ module.exports = {
         sidebar: [
             ['/', '简介'],
             ['/js', 'JavaScript'],
+            ['/implement', '手写和实现'],
             ['/typescript', 'TypeScript'],
             ['/css', 'CSS'],
             ['/html', 'HTML'],

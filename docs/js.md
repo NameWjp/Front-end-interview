@@ -90,166 +90,6 @@ tips：建议阅读阮一峰的文章 [http://www.ruanyifeng.com/blog/2015/11/ci
 
 
 
-## 防抖和节流函数
-防抖：在指定的时间内不执行才会调用。例如调整浏览器窗口大小时，`resize` 次数过于频繁，但我们只需要调整完窗口后再计算，这里就可以用防抖处理。    
-节流：控制调用的频率，多长时间内只能调用一次。例如商城里面的放大镜效果，`onmouseover` 触发过于频繁，这时就需要使用节流控制调用频率。
-
-```js
-/**
- * 防抖函数
- * 注意，fn不要使用箭头函数
- * @param {Function} fn
- * @param {Number} delay
- */
-function debounce(fn, delay) {
-  let timeId;
-  return function(...args) {
-    if (timeId) {
-      clearTimeout(timeId)
-    }
-    timeId = setTimeout(() => {
-      fn.call(this, ...args);
-      timeId = null;
-    }, delay);
-  }
-}
-
-/**
- * 节流函数
- * 开始执行触发，离开后不触发
- * @param {Function} fn
- * @param {Number} delay
- */
-function throttle(fn, delay) {
-  let previous = 0;
-  return function(...args) {
-    const now = +new Date();
-    if (now - previous > delay) {
-      fn.call(this, ...args);
-      previous = now;
-    }
-  }
-}
-```
-在使用上可以使用 lodash 库提供的防抖和节流，功能更加完善。
-
-
-
-## async 和 Generator 的关系，如何使用 Generator 实现 async
-async 语法是内置自动执行器的 Generator 的语法糖。  
-利用 `Generator` 实现 `async/await` 主要就是用一个函数（自动执行器）来包装 `Generator`，从而实现自动执行 `Generator`。  
-每次执行 `next()` 返回的 `{ value, done }` 中的 value 是一个 Promise，所以要等它执行完毕后再执行下一次 `next()`，即在它的后面加一个 `then()` 函数，并且在 `then()` 函数中执行 `next()`。  
-```js
-function t(data) {
-  return new Promise(r => setTimeout(() => r(data), 100))
-}
-
-function *test() {
-  const data1 = yield t(1)
-  console.log(data1)
-  const data2 = yield t(2)
-  console.log(data2)
-  return 3
-}
-
-function async(generator) {
-  return new Promise((resolve, reject) => {
-    const gen = generator()
-
-    function step(nextFun) {
-      // 每一次 next() 都是返回这样的数据 { value: xx, done: false }，结束时 done 为 true
-      let next
-      try {
-        // 如果 generator() 执行报错，需要 reject 给外面的 catch 函数
-        next = nextFun()
-      } catch(e) {
-        return reject(e)
-      }
-
-      // done: true 代表 generator() 结束了
-      if (next.done) {
-        return resolve(next.value)
-      }
-
-      Promise.resolve(next.value).then(
-        (val) => step(() => gen.next(val)), // 通过 next(val) 将 val 传给 yield 后面的变量 
-        (err) => step(() => gen.throw(err)),
-      )
-    }
-
-    step(() => gen.next())
-  })
-}
-
-// 1 2 3
-async(test).then(val => console.log(val))
-```
-
-
-
-## 函数柯里化的优点和实现
-柯里化的优点如下：
-1. 参数复用
-2. 提前返回
-3. 延迟计算/运行
-实现如下：
-```js
-function sub_curry(fn, ...params) {
-  return function(...newParams) {
-    return fn.apply(this, [...params, ...newParams]);
-  };
-}
-
-function curry(fn, length) {
-  length = length || fn.length;
-  
-  return function(...params) {
-    if (params.length < length) {
-      return curry(sub_curry.apply(this, [fn, ...params]), length - params.length);
-    } else {
-      return fn.apply(this, params);
-    }
-  };
-}
-
-// 使用
-function test(a, b) {
-    console.log(a, b)
-}
-
-curry(test)(1)(2) // 1 2
-```
-在使用上可以使用 lodash 库提供的 curry 函数，功能更加完善。
-
-
-
-## 实现 compose 函数
-compose（组合）函数特点：
-+ compose 的参数是函数，返回的也是一个函数
-+ 因为除了第一个函数的接受参数，其他函数的接受参数都是上一个函数的返回值，所以初始函数的参数是多元的，而其他函数的接受值是一元的
-+ compsoe 函数可以接受任意的参数，所有的参数都是函数，且执行方向是自右向左的，初始函数一定放到参数的最右面
-```js
-function compose(...fns) {
-    let isFirst = true
-    return (...args) => {
-      return fns.reduceRight((result, fn) => {
-          if (!isFirst) return fn(result)
-          isFirst = false
-          return fn(...result)
-      }, args)
-    }
-}
-
-// 测试
-const greeting = (firstName, lastName) => 'hello, ' + firstName + ' ' + lastName
-const toUpper = str => str.toUpperCase()
-const fn = compose(toUpper, greeting)
-console.log(fn('jack', 'smith')) // HELLO, JACK SMITH
-```
-在使用上可以使用 lodash 库提供的 flowRight 函数。
-
-
-
 ## DOM 事件触发流程
 1. 捕获阶段：从父节点到目标节点
 2. 目标阶段：在目标元素上触发事件
@@ -293,28 +133,6 @@ document.querySelectorAll('li').forEach((e) => {
 
 
 
-## new 一个对象内部做了什么？
-```js
-function Test(){}
-const test = new Test()
-```
-1. 创建一个新对象
-```js
-const obj = {}
-```
-2. 设置新对象的 constructor 属性为构造函数的名称，设置新对象的 `__proto__` 属性指向构造函数的 prototype 对象
-```js
-obj.constructor = Test
-obj.__proto__ = Test.prototype
-```
-3. 调用构造函数，并将 this 指向新对象
-```js
-Test.call(obj)
-```
-4. 将初始化完毕的新对象地址，保存到等号左边的变量中
-
-
-
 ## prototype 和 `__proto__` 的关系是什么
 结论：
 1. `prototype` 用于访问函数的原型对象。
@@ -332,68 +150,6 @@ test.__proto__ == Test.prototype // true
 
 ## 原型链
 所有的 JS 对象都有一个 `__proto__` 属性，指向它的原型对象。当试图访问一个对象的属性时，如果没有在该对象上找到，它还会搜寻该对象的原型，以及该对象的原型的原型，依次层层向上搜索，直到找到一个名字匹配的属性或到达原型链的末尾（末尾是 null）。
-
-
-
-## 使用 ES5 和 ES6 实现继承
-ES5 prototype 寄生组合式继承  
-```js
-function SuperType(name) {
-  this.name = name
-}
-
-SuperType.prototype.sayName = function() {
-  console.log(this.name)
-}
-
-function SubType(name, age) {
-  SuperType.call(this, name)
-  this.age = age
-}
-
-SubType.prototype.sayAge = function() {
-  console.log(this.age)
-}
-
-function extendPrototype(Sub, Super) {
-  Sub.prototype = Object.create(Super.prototype)
-  Sub.prototype.constructor = Sub
-}
-
-extendPrototype(SubType, SuperType)
-
-const sub = new SubType('tom', 18)
-sub.sayAge() // 18
-sub.sayName() // tom
-```
-ES6 class
-```js
-class SuperType {
-  constructor(name) {
-    this.name = name
-  }
-
-  sayName() {
-    console.log(this.name)
-  }
-}
-
-class SubType extends SuperType {
-  constructor(name, age) {
-    super(name)
-    this.age = age
-  }
-
-  sayAge(age) {
-    console.log(this.age)
-  }
-}
-
-const sub = new SubType('tom', 18)
-sub.sayAge() // 18
-sub.sayName() // tom
-```
-从实现上来看，ES6 更加简洁。
 
 
 
@@ -442,7 +198,7 @@ f();
 ```
 在 f() 执行后，函数的局部变量已经没用了，一般来说，这些局部变量都会被回收。但上述例子中，o 和 o2 形成了循环引用，导致无法被回收。
 ### 标记-清除算法
-这个算法假定设置一个叫做根（root）的对象（在 Javascript 里，根是全局对象）。垃圾回收器将定期从根开始，找所有从根开始引用的对象，然后找这些对象引用的对象……从根开始，垃圾回收器将找到所有可以获得的对象和收集所有不能获得的对象。
+这个算法假定设置一个叫做根（root）的对象（在 Javascript 里，根是全局对象）。垃圾回收器将定期从根开始，找所有从根开始引用的对象，然后找这些对象引用的对象……从根开始，垃圾回收器将找到所有可以获得的对象和收集所有不能获得的对象，之后会清除掉所有不能获得的对象。
 
 对于刚才的例子来说，在 f() 执行后，由于 o 和 o2 从全局对象出发无法获取到，所以它们将会被回收。  
 ### 高效使用内存
@@ -612,87 +368,6 @@ m.set(a, 100)   // 所以执行 set 操作时，实际上是将新的 'abc' 和 
 
 
 
-## 实现发布/订阅模式
-```js
-class Event {
-  constructor() {
-    this.events = {}
-  }
-
-  on(event, callback) {
-    if (!this.events[event]) {
-      this.events[event] = []
-    }
-
-    this.events[event].push(callback)
-  }
-
-  off(event, callback) {
-    if (this.events[event]) {
-      if (callback) {
-        const cbs = this.events[event]
-        for(let i = 0; i < cbs.length; i++) {
-          if (callback === cbs[i]) {
-            cbs.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        this.events[event] = []
-      }
-    }
-  }
-
-  emit(event, ...args) {
-    if (this.events[event]) {
-      for (const func of this.events[event]) {
-        func.call(this, ...args)
-      }
-    }
-  }
-
-  once(event, callback) {
-    const wrap = (...args) => {
-      callback.call(this, ...args)
-      this.off(event, wrap)
-    }
-
-    this.on(event, wrap)
-  }
-}
-```
-
-
-
-## 如何实现一个可设置过期时间的 localStorage
-```js
-(function () {
-    const getItem = localStorage.getItem.bind(localStorage)
-    const setItem = localStorage.setItem.bind(localStorage)
-    const removeItem = localStorage.removeItem.bind(localStorage)
-
-    localStorage.getItem = function (key) {
-        const expires = getItem(key + '_expires')
-        if (expires && new Date() > new Date(Number(expires))) {
-            removeItem(key)
-            removeItem(key + '_expires')
-        }
-
-        return getItem(key)
-    }
-
-    localStorage.setItem = function (key, value, time) {
-        if (typeof time !== 'undefined') {
-            setItem(key + '_expires', new Date().getTime() + Number(time))
-        }
-
-        return setItem(key, value)
-    }
-})()
-```
-
-
-
 ## javascript 事件循环
 javascript 是一门单线程的语言，会将执行的代码分为 `宏任务` 和 `微任务`。不同的代码会被推到不同的任务队列里，浏览器执行的过程中会先执行 `宏任务` 中的代码，执行完后会再执行 `微任务` 里的代码，执行完后再执行 `宏任务` 里的代码，依次类推，如下图：  
 ![](./images/js_event.png)
@@ -710,6 +385,7 @@ javascript 是一门单线程的语言，会将执行的代码分为 `宏任务`
 |process.nextTick|❌|✅|
 |MutationObserver|✅|❌|
 |Promise.then catch finally|✅|✅|
+|queueMicrotask|✅|✅|
 ### 总结
 有一道测试题如下:
 ```js
@@ -751,7 +427,7 @@ setTimeout(function() {
 })
 ```
 结合上面的知识点，结果为：1，7，6，8，2，4，3，5，9，11，10，12。  
-这里需要注意的是在 setTimeout 回调执行完后会被认为一个 `宏任务` 执行结束，会去检测 `微任务` 队列，等 `微任务` 队列执行完后会再去检测 `宏任务` 队列（也就是说每一个 setTimeout 回调执行后就会看看是否有 `微任务` 有的话就执行）。
+这里需要注意的是在 setTimeout 回调执行完后会被认为一个 `宏任务` 执行结束，会去检测 `微任务` 队列，等 `微任务` 队列执行完后会再去检测 `宏任务` 队列（也就是说每一个 setTimeout 回调执行后就会看看是否有 `微任务` 有的话就执行）。在上面的例子里，第一个 setTimeout 回调执行完后，即使 `宏任务` 里还有一个 setTimeout 也不会立刻执行，而是回去查看 `微任务` 队列是否有可执行的。
 
 
 
@@ -801,3 +477,11 @@ escape 是对字符串进行编码，作用是让它们在所有电脑上可读�
 encodeURI 设计出来的目的就是为了编码整个 URL 的，不会对 `ASCII字母 数字 ~!@#$&*()=:/,;?+'` 这些字符编码，编码出来的字符串可以直接访问。但是有时会有问题，例如：http//xxx?t==v，我们的本意是传递 `t=` 和 `v` 这一对查询条件，由于 encodeURI 不会对 `=` 进行编码，进而出现的问题。
 ### encodeURIComponent
 encodeURIComponent 设计出来的目的是为了编码 URL 的查询参数的，它的编码范围更大，不会对 `ASCII字母 数字 ~!*()'` 这些字符编码。由于它可以编码 `? &` 这类字符，所以它可以解决 encodeURI 出现的问题，例如：\`http//xxx?${encodeURIComponent(t=)}=${encodeURIComponent(v)}\`
+
+
+
+## 对象的遍历顺序
+对象的遍历并不是按照 key 加入的顺序来遍历的，而是按照以下的规则遍历：
+1. 首先遍历所有数值键（如果能转成数字的话），按照数值升序排列。
+2. 其次遍历所有字符串键，按照加入时间升序排列。
+3. 最后遍历所有 Symbol 键，按照加入时间升序排列。
