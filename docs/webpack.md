@@ -53,18 +53,18 @@ tree-shaking 会将没有使用的模块移除，开启 tree-shaking 步骤如�
 loader 其实是一个函数，它的参数是匹配文件的源码，返回结果是处理后的源码。例如以下 loader 是将 var 关键词替换为 const：
 ```js
 module.exports = function (source) {
-    return source.replace(/var/g, 'const')
+  return source.replace(/var/g, 'const')
 }
 ```
 loader 还可以是异步的，如下：
 ```js
 module.exports = function (source) {
-    const callback = this.async()
+  const callback = this.async()
 
-    // 由于有 3 秒延迟，所以打包时需要 3+ 秒的时间
-    setTimeout(() => {
-        callback(null, `${source.replace(/;/g, '')}`)
-    }, 3000)
+  // 由于有 3 秒延迟，所以打包时需要 3+ 秒的时间
+  setTimeout(() => {
+    callback(null, `${source.replace(/;/g, '')}`)
+  }, 3000)
 }
 ```
 ### plugin
@@ -80,12 +80,12 @@ webpack 在整个编译周期中会触发很多不同的事件，plugin 可以�
 function Plugin(options) {}
 
 Plugin.prototype.apply = function (compiler) {
-    // 所有文件资源都被 loader 处理后触发这个事件
-    compiler.plugin('emit', function (compilation, callback) {
-        // 功能完成后调用 webpack 提供的回调
-        console.log('Hello World')
-        callback()
-    })
+  // 所有文件资源都被 loader 处理后触发这个事件
+  compiler.plugin('emit', function (compilation, callback) {
+    // 功能完成后调用 webpack 提供的回调
+    console.log('Hello World')
+    callback()
+  })
 }
 
 module.exports = Plugin

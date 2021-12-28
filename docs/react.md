@@ -8,11 +8,11 @@
 ```js
 export default withA(
   withB (
-     withC (
-        withD (
-           Component
-        )
-     )
+    withC (
+      withD (
+        Component
+      )
+    )
   )
 )
 ```

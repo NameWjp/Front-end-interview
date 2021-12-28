@@ -240,8 +240,8 @@ typeof {}
 instanceof 操作符主要用来检查构造函数的原型是否在对象的原型链上。
 ```js
 function Fruit(name, color) {
-    this.name = name;
-    this.color = color;
+  this.name = name;
+  this.color = color;
 }
 
 const apple = new Fruit("apple", "red");
@@ -363,7 +363,7 @@ a = null // 将 a 置为空后，m 里的值 100 在垃圾回收时将会被回�
 ```js
 const a = 'abc' // 由于基本数据类型在传递时，传递的是值，而不是引用。
 m.set(a, 100)   // 所以执行 set 操作时，实际上是将新的 'abc' 和 100 关联起来，而不是原来 a 变量指向的那个。
-	            // 那这样就会有问题，m 里存储的永远是没有被引用的键，随时都会被回收。
+	              // 那这样就会有问题，m 里存储的永远是没有被引用的键，随时都会被回收。
 ```
 
 
@@ -392,38 +392,38 @@ javascript 是一门单线程的语言，会将执行的代码分为 `宏任务`
 console.log('1');
 
 setTimeout(function() {
-    console.log('2');
-    process.nextTick(function() {
-        console.log('3');
-    })
-    new Promise(function(resolve) {
-        console.log('4');
-        resolve();
-    }).then(function() {
-        console.log('5')
-    })
+  console.log('2');
+  process.nextTick(function() {
+    console.log('3');
+  })
+  new Promise(function(resolve) {
+    console.log('4');
+    resolve();
+  }).then(function() {
+    console.log('5')
+  })
 })
 process.nextTick(function() {
-    console.log('6');
+  console.log('6');
 })
 new Promise(function(resolve) {
-    console.log('7');
-    resolve();
+  console.log('7');
+  resolve();
 }).then(function() {
-    console.log('8')
+  console.log('8')
 })
 
 setTimeout(function() {
-    console.log('9');
-    process.nextTick(function() {
-        console.log('10');
-    })
-    new Promise(function(resolve) {
-        console.log('11');
-        resolve();
-    }).then(function() {
-        console.log('12')
-    })
+  console.log('9');
+  process.nextTick(function() {
+    console.log('10');
+  })
+  new Promise(function(resolve) {
+    console.log('11');
+    resolve();
+  }).then(function() {
+    console.log('12')
+  })
 })
 ```
 结合上面的知识点，结果为：1，7，6，8，2，4，3，5，9，11，10，12。  

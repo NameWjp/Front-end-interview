@@ -57,14 +57,14 @@ compose（组合）函数特点：
 + compsoe 函数可以接受任意的参数，所有的参数都是函数，且执行方向是自右向左的，初始函数一定放到参数的最右面
 ```js
 function compose(...fns) {
-    let isFirst = true
-    return (...args) => {
-      return fns.reduceRight((result, fn) => {
-          if (!isFirst) return fn(result)
-          isFirst = false
-          return fn(...result)
-      }, args)
-    }
+  let isFirst = true
+  return (...args) => {
+    return fns.reduceRight((result, fn) => {
+      if (!isFirst) return fn(result)
+      isFirst = false
+      return fn(...result)
+    }, args)
+  }
 }
 
 // 测试
@@ -223,27 +223,27 @@ class Event {
 ## 如何实现一个可设置过期时间的 localStorage
 ```js
 (function () {
-    const getItem = localStorage.getItem.bind(localStorage)
-    const setItem = localStorage.setItem.bind(localStorage)
-    const removeItem = localStorage.removeItem.bind(localStorage)
+  const getItem = localStorage.getItem.bind(localStorage)
+  const setItem = localStorage.setItem.bind(localStorage)
+  const removeItem = localStorage.removeItem.bind(localStorage)
 
-    localStorage.getItem = function (key) {
-        const expires = getItem(key + '_expires')
-        if (expires && new Date() > new Date(Number(expires))) {
-            removeItem(key)
-            removeItem(key + '_expires')
-        }
-
-        return getItem(key)
+  localStorage.getItem = function (key) {
+    const expires = getItem(key + '_expires')
+    if (expires && new Date() > new Date(Number(expires))) {
+      removeItem(key)
+      removeItem(key + '_expires')
     }
 
-    localStorage.setItem = function (key, value, time) {
-        if (typeof time !== 'undefined') {
-            setItem(key + '_expires', new Date().getTime() + Number(time))
-        }
+    return getItem(key)
+  }
 
-        return setItem(key, value)
+  localStorage.setItem = function (key, value, time) {
+    if (typeof time !== 'undefined') {
+      setItem(key + '_expires', new Date().getTime() + Number(time))
     }
+
+    return setItem(key, value)
+  }
 })()
 ```
 
@@ -321,7 +321,7 @@ function curry(fn, length) {
 
 // 使用
 function test(a, b) {
-    console.log(a, b)
+  console.log(a, b)
 }
 
 curry(test)(1)(2) // 1 2

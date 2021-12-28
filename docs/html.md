@@ -59,21 +59,21 @@ src 和 href 都是用来引用外部的资源，他们的区别如下：
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script>
-        console.time('load')
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/2.1.10/chart/bar.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+      console.time('load')
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/2.1.10/chart/bar.js"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
 <script>
 window.onload = () => {
-    console.timeEnd('load') // load: 1449.759033203125ms
+  console.timeEnd('load') // load: 1449.759033203125ms
 }
 </script>
 </body>
@@ -87,7 +87,7 @@ window.onload = () => {
 <link rel="preload" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" as="style">
 
 window.onload = () => {
-    console.timeEnd('load') // load: 10.8818359375ms
+  console.timeEnd('load') // load: 10.8818359375ms
 }
 ```
 用 preload 来加载资源，只需要 10 ms 就触发了 onload 事件，说明同样是下载文件，使用 preload 不会阻塞 onload 事件。注意这样加载的话无法在 onload 中使用这些文件提供的方法，适合加载一些无关紧要的文件。
