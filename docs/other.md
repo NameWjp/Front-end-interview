@@ -152,3 +152,18 @@ http {
   } 
 }
 ```
+
+
+
+## MVC、MCP、MVVM 的区别
+### MVC
+![](./images/MVC.png)  
+MVC 是比较经典的软件架构，总体的流程是：View 传送指令到 Controller，Controller 完成业务逻辑后，要求 Model 改变状态，Model 将新的数据发送到 View，用户得到反馈，所有通信都是单向的。
+
+### MVP
+![](./images/MVP.png)  
+MVP 是由 MVC 演化而来，其特点是 View 和 Model 层无法直接通信，而是通过中间层 Presenter 传递，一定程度简化了复杂性。View 非常薄，不部署任何业务逻辑，称为 "被动视图"（Passive View），即没有任何主动性，而 Presenter 非常厚，所有逻辑都部署在那里，我们需要手动做许多 View 层和 Model 层数据同步的操作。
+
+### MVVM
+![](./images/MVVM.png)  
+和 MVP 相似，MVVM 的 View 和 Model 层也无法直接通信，而是通过 ViewModel 来通信的。与 MVP 不同的是 MVVM 的 ViewModel 往往是框架提供的（例如 vue），不再需要自己手动同步。用户只需要关注 View 层和 Model 层的逻辑，大大的简化了复杂性。
