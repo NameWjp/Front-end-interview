@@ -28,20 +28,28 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 
 
 
-## webpack 能做哪些性能优化
-1. 压缩代码
-2. 使用 contenthash 作为文件名称的一部分，利于浏览器缓存
-3. tree-shaking  
-tree-shaking 会将没有使用的模块移除，开启 tree-shaking 步骤如下：  
-首先需要在 babel 配置中 modules 设置为 false，这样 babel 就不会将我们写的 es6 Module 的导入方式进行转换（tree-shaking 依赖 es6 的 Module 语法）。  
-接着设置 webpack 的 mode 为 development 即可开启 tree-shaking。  
-需要注意的是，如果你使用的包不支持 tree-shaking，那么你也是没法 tree-shaking 的。
-4. 分割代码，将第三方插件或公共代码单独提取出来打包
-5. 异步模块，按需加载（例如 Vue 路由懒加载）
+## 聊聊 webpack 的 tree-shaking  
+### 开启步骤
+1. 关闭 babel 的模块语法转换
+在 babel 配置中 modules 设置为 false，这样 babel 就不会将我们写的 es6 Module 的导入方式进行转换（tree-shaking 依赖 es6 的 Module 语法）
+2. 设置 mode 为 production
+3. 确保 usedExports 为 true（默认为 true）
+4. 必要的情况下指定 sideEffects
+### usedExports
+当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 打包 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
+### sideEffects
+虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所以代码都是无副作用的，则 webpack 会移除所以未使用的代码。
+### 最佳实践
+1. 关闭 babel 的 modules 转换，以开启 tree-shaking
+2. 生产环境指定 mode 为 production
+3. 选取 package.json 中 sideEffects 为 false 的包，帮助 webpack tree-shaking
+4. 在自己项目的  package.json 中的 sideEffects 字段标记有副作用的代码，帮助 webpack tree-shaking
+
+参考链接：[Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765#heading-18)
 
 
 
-## webpack 的 side-effect-free 字段的作用
+## webpack 的 sideEffects 字段的作用
 当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段标记是用来标记哪些文件是 side-effect-free（无副作用），一般用于库开发者标记自己的库是否是无副作用的（注意，一旦标记为无副作用，即使你代码中有副作用代码，webpack 也会 tree-shaking 掉，省去了 webpack 的一些静态语法分析的步骤），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。  
 
 参考链接：[Webpack 中的 sideEffects 到底该怎么用](https://zhuanlan.zhihu.com/p/40052192)
@@ -94,3 +102,11 @@ module.exports = Plugin
 > compilation 对象代表了一次资源版本构建。当运行 webpack 开发环境中间件时，每当检测到一个文件变化，就会创建一个新的 compilation，从而生成一组新的编译资源。一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。compilation 对象也提供了很多关键时机的回调，以供插件做自定义处理时选择使用。
 
 参考链接：[https://github.com/woai3c/Front-end-articles/issues/6](https://github.com/woai3c/Front-end-articles/issues/6)
+
+
+
+## webpack 打包后代码里的 `__esModule` 和 `__PURE__` 是用来干嘛的
+1. `__esModule`  
+`__esModule` 是为了解决 CJS 和 ESM 互转的问题，标记该代码是由 ESM 打包成 CJS 的，详见：[CJS和ESM的来龙去脉](https://github.com/NameWjp/blog/issues/54)
+2. `__PURE__`  
+babel 的转换或 webpack 的 tree-shaking 过程中会使用 `__PURE__` 标记未使用代码，在后续的压缩中会忽略 `__PURE__` 标记的代码，当然也可以手动添加 `__PURE__` 注解，详见：[聊聊 webpack 的 tree-shaking](#聊聊-webpack-的-tree-shaking)

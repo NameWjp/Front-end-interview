@@ -180,3 +180,19 @@ for(var i = 0; i < 100; i++) {
 //最后一次性添加到document中
 document.body.appendChild(oFragmeng); 
 ```
+
+
+
+## vue 父子生命周期执行顺序
+vue 的渲染是从父到子，再从子到父的，也比较符合常规，和栈的执行顺序类似。  
+1. 挂载  
+父beforeCreate => 父created => 父beforeMount => 子beforeCreate => 子created => 子beforeMount => 子Mounted => 父Mounted
+2. 更新  
+父beforeUpdate => 子beforeUpdate => 子updated => 父updated
+3. 卸载  
+父beforeDestroy => 子beforeDestroy => 子destroyed => 父destroyed
+
+
+
+## vue 子组件 $emit 后 props 会立刻更新吗？为什么
+不会，我们知道 vue 的更新是异步的，同一时间修改多次 **data** 实际只会更新一次视图，这样做可以大大减少 dom 更新的次数，提高性能。所以当子组件 **$emit** 后实际是修改父组件的 **data**，但是由于视图没有更新，所以传给子组件的 **props** 是不变的，只有等到重新更新视图后，传入的 **props** 才会发生变化。
