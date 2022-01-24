@@ -80,12 +80,12 @@ tips：建议阅读阮一峰的文章 [http://www.ruanyifeng.com/blog/2015/11/ci
 
 
 
-## cookie token 和 session 的区别
+## session、cookie、token 和 jwt 的区别
 它们出现的原因是因为 http 是无状态的，所以需要一种手段去标示哪些 http 请求是那个用户发送的。  
 1. session 存储于服务器，可以理解为一个状态列表，拥有一个唯一识别符号 sessionId，通常存放于 cookie 中。服务器收到 cookie 后解析出 sessionId，再去 session 列表中查找，才能找到相应 session。所以 session 的实现依赖于 cookie。
 2. cookie 类似一个令牌，装有 sessionId，存储在客户端，浏览器通常会自动添加，存储大小为 4kb。
 3. token 也类似一个令牌，无状态，用户信息都被加密到 token 中，服务器收到 token 后解密就可知道是哪个用户。需要开发者手动添加。
-4. jwt 只是一个跨域认证的方案
+4. jwt 是一个跨域认证的方案
 
 
 
@@ -108,17 +108,28 @@ tips：建议阅读阮一峰的文章 [http://www.ruanyifeng.com/blog/2015/11/ci
 事件委托利用了事件冒泡，只指定一个事件处理程序，就可以管理某一类型的所有事件。使用事件委托的一个好处就是可以节省内存。
 ```js
 <ul>
-  <li>苹果</li>
-  <li>香蕉</li>
-  <li>凤梨</li>
+  <li>
+    <span>苹果</span>
+  </li>
+  <li>
+    <span>香蕉</span>
+  </li>
+  <li>
+    <span>凤梨</span>
+  </li>
 </ul>
 
-// good（这里如果存在嵌套的多个元素，可以利用 parentNode 属性从 event.target 一直往上找，找到需要的元素为止）
+// good
 document.querySelector('ul').onclick = (event) => {
   let target = event.target
-  if (target.nodeName === 'LI') {
-    console.log(target.innerHTML)
+  while (target.nodeName !== 'UL') {
+    // 这里捕获 li 元素
+    if (target.nodeName === 'LI') {
+      break;
+    }
+    target = target.parentNode;
   }
+  console.log(target)
 }
 
 // bad
