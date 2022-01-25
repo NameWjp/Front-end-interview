@@ -228,26 +228,37 @@ f();
 
 
 ## javascript 里的类型判断
-1. typeof 操作符  
-使用 typeof 判断基本类型是可以的，但是引用类型都会返回 object
+1. 判断 Null 和 Undefined  
+使用全等 === 来判断
+2. 判断 Boolean、Number、String、BigInt、Symbol、Function  
+使用 typeof 操作符来判断，它会返回构造函数的小写名称，不过对于数组和对象都会返回 object
+3. 判断数组  
+使用 Array.isArray 静态方法来判断，会返回布尔值
+4. 判断 Promise  
 ```js
-typeof 1
-"number"
-
-typeof "1"
-"string"
-
-typeof null
-"object"
-
-typeof []
-"object"
-
-typeof {}
-"object"
+export function isDef (val) {
+  return val !== undefined && val !== null
+}
+export function isPromise (val) {
+  return (
+    isDef(val) &&
+    typeof val.then === 'function' &&
+    typeof val.catch === 'function'
+  )
+}
 ```
-2. instanceof 操作符  
-instanceof 操作符主要用来检查构造函数的原型是否在对象的原型链上。
+5. 判断对象、RegExp、Date 等  
+使用 Object.prototype.toString.call 这个万能方法，它会返回 [object type] 字符串，type 就是对应的类型
+```js
+// 纯对象
+Object.prototype.toString.call(obj) === '[object Object]'
+// RegExp
+Object.prototype.toString.call(reg) === '[object RegExp]'
+// Date
+Object.prototype.toString.call(date) === '[object Date]'
+```
+6. 判断构造函数的原型是否在对象的原型链上  
+使用instanceof 操作符
 ```js
 function Fruit(name, color) {
   this.name = name;
@@ -256,18 +267,8 @@ function Fruit(name, color) {
 
 const apple = new Fruit("apple", "red");
 
-apple instanceof Object  // true
+apple instanceof Fruit  // true
 apple instanceof Array   // false
-```
-3. toString方法  
-该方法基本可以判断所有类型
-```js
-function _typeof (obj) {
-  const s = Object.prototype.toString.call(obj);
-  return s.match(/\[object (.*?)\]/)[1].toLowerCase();
-}
-
-_typeof('123') // string
 ```
 
 
@@ -284,19 +285,10 @@ _typeof('123') // string
 
 
 
-## 内置函数(原生函数)
-+ String
-+ Number
-+ Boolean
-+ Object
-+ Function
-+ Array
-+ Date
-+ RegExp
-+ Error
-+ Symbol  
+## 内置对象和函数
+包括许多构造函数，例如 String、Array 等，还包括一些工具对象和函数：Intl、JSON、Math，具体查看：[JavaScript 标准内置对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects)
 
-注意像 String，Number 我们定义的时候一般不会使用 new 的方式，而是使用定义字面量的方式定义。例如 "i am string"，当我们调用它的字面量的方法时，语法编译器会自动进行装箱操作，将其包装成 String 对象，然后调用其方法，之后再进行拆箱操作将其转回字面量。
+注意像 String、Number、Boolean 我们定义的时候一般不会使用 new 的方式，而是使用定义字面量的方式定义。例如 "i am string"，当我们调用它的字面量的方法时，语法编译器会自动进行装箱操作，将其包装成 String 对象，然后调用其方法，之后再进行拆箱操作将其转回字面量。
 
 
 
