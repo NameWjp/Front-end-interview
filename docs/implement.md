@@ -60,9 +60,11 @@ function compose(...fns) {
   let isFirst = true
   return (...args) => {
     return fns.reduceRight((result, fn) => {
-      if (!isFirst) return fn(result)
-      isFirst = false
-      return fn(...result)
+      if (isFirst) {
+        isFirst = false;
+        return fn(...result);
+      }
+      return fn(result);
     }, args)
   }
 }
@@ -80,7 +82,7 @@ console.log(fn('jack', 'smith')) // HELLO, JACK SMITH
 ## 实现 new 操作符
 调用 `new` 的过程中会发生四件事情：
 1. 创建一个新对象
-2. 设置新对象的 `constructor` 属性为构造函数，设置新对象的 `__proto__` 属性指向构造函数的 prototype 对象
+2. 使用 Object.create 创造新对象，使新对象的 `__proto__` 属性指向构造函数的 prototype 对象，设置新对象的 `constructor` 属性为构造函数。
 3. 调用构造函数，并将 this 指向新对象
 4. 返回新对象
 
@@ -122,16 +124,16 @@ function SubType(name, age) {
   this.age = age
 }
 
-SubType.prototype.sayAge = function() {
-  console.log(this.age)
-}
-
 function extendPrototype(Sub, Super) {
   Sub.prototype = Object.create(Super.prototype)
   Sub.prototype.constructor = Sub
 }
 
 extendPrototype(SubType, SuperType)
+
+SubType.prototype.sayAge = function() {
+  console.log(this.age)
+}
 
 const sub = new SubType('tom', 18)
 sub.sayAge() // 18
