@@ -36,7 +36,7 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 3. 确保 usedExports 为 true（默认为 true）
 4. 必要的情况下指定 sideEffects
 ### usedExports
-当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 打包 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
+当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 转换 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
 ### sideEffects
 虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所以代码都是无副作用的，则 webpack 会移除所以未使用的代码。
 ### 最佳实践

@@ -14,14 +14,14 @@ HTTP 缓存主要分为以下两种：
 ![](./images/browser_cache.jpg)  
 两者的主要区别是使用本地缓存的时候，是否需要向服务器验证本地缓存是否依旧有效。顾名思义，协商缓存，就是需要和服务器进行协商，最终确定是否使用本地缓存。
 ### 强缓存
-当浏览器向服务器发起请求时，服务器会将缓存规则放入 HTTP 响应报文的 HTTP 头中和请求结果一起返回给浏览器，控制强制缓存的字段分别是 Expires 和 Cache-Control，其中 Cache-Control 优先级比 Expires 高。当浏览器从缓存里拿数据的时候 http 里会显示 Memory Cache 或 Disk Cache。
+当浏览器向服务器发起请求时，服务器会将缓存规则放入 HTTP **响应报文**的 HTTP 头中和请求结果一起返回给浏览器，控制强制缓存的字段分别是 Expires 和 Cache-Control，其中 Cache-Control 优先级比 Expires 高。当浏览器从缓存里拿数据的时候 http 里会显示 Memory Cache 或 Disk Cache。
 #### Expires
 Expires 是 http1.0 提出的一个表示资源过期时间的 header，它描述的是一个绝对时间，由服务器返回。由于设置的是绝对时间，当客户端在不同的时区时，则过期时间就会发生误差。
 ```
 Expires: Wed, 11 May 2018 07:20:00 GMT
 ```
 #### Cache-Control
-Cache-Control 出现于 HTTP/1.1，优先级高于 Expires，表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。
+Cache-Control 出现于 HTTP/1.1，优先级高于 Expires，表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。需要注意的是请求头也可以设置 Cache-Control，表示我需要什么样的缓存，但是**响应报文**是否有 Cache-Control 是由后端配置的。
 ```
 Cache-Control: max-age=300
 ```
