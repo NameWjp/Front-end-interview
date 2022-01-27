@@ -21,7 +21,7 @@ Expires 是 http1.0 提出的一个表示资源过期时间的 header，它描�
 Expires: Wed, 11 May 2018 07:20:00 GMT
 ```
 #### Cache-Control
-Cache-Control 出现于 HTTP/1.1，优先级高于 Expires，表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。需要注意的是请求头也可以设置 Cache-Control，表示我需要什么样的缓存，但是**响应报文**是否有 Cache-Control 是由后端配置的。
+Cache-Control 出现于 HTTP/1.1，优先级高于 Expires，表示的是相对时间。设置 max-age 字段为 300 则表示缓存该结果 300 秒。需要注意的是请求头也可以设置 Cache-Control，表示我需要什么样的缓存，但是**响应报文**是否有 Cache-Control 是由后端配置的。另外 Chrome 会在强制刷新浏览器或者 Network 模块勾选 Disable cache 后会在请求头里面携带 `Cache-Control: no-cache`。
 ```
 Cache-Control: max-age=300
 ```
