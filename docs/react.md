@@ -1,5 +1,5 @@
 ## hooks 的出现解决了什么问题？
-个人认为 react hooks 的出现主要解决了两个问题。
+个人认为 React hooks 的出现主要解决了两个问题。
 1. 逻辑割裂  
 在 hooks 出现之前，react 主要通过编写 class 类来编写组件，每个组件有自己的生命周期，这就导致我们在编码时必须按照组件的生命周期去写，例如：我们在 `componentDidMount` 注册一个定时去，在 `componentWillUnmount` 销毁定时器。在 `componentDidMount` 中请求数据，在 `componentDidUpdate` 中判断状态变化请求数据。同样的逻辑， 我们需要在不同的生命周期中去实现，在一个大型的 app 中，类似的逻辑会有很多，掺杂在一起，越来越难以维护。
 2. 逻辑复用  
@@ -17,12 +17,12 @@ export default withA(
 )
 ```
 Render Props 也一样，这两种模式都会限制你的组件结构，随着功能的增加，包裹的层数越来越多，陷入所谓的 `wrapper hell` 之中。  
-Hooks 的出现是一种全新的写法，抛弃了类，使用函数来写组件。但由于函数没法保存状态，react 引入了 `useState` 等 API 来帮助我们保留状态。其中的原理是 react 会根据 `useState` 的调用顺序来在内部保留状态，所以 Hooks 有一个重要的规则，只能在最顶层使用 Hooks。使用 Hooks 编写的代码没有「嵌套地狱」，组织代码粒度更细，相关逻辑代码紧密，提升了组件的内聚性，减少了维护成本。
+Hooks 的出现是一种全新的写法，抛弃了类，使用函数来写组件。但由于函数没法保存状态，react 引入了 `useState` 等 API 来帮助我们保留状态。其中的原理是 React 会根据 `useState` 的调用顺序来在内部保留状态，所以 Hooks 有一个重要的规则，只能在最顶层使用 Hooks。使用 Hooks 编写的代码没有「嵌套地狱」，组织代码粒度更细，相关逻辑代码紧密，提升了组件的内聚性，减少了维护成本。
 
 
 
-## react 的生命周期有哪些？
-react 生命周期图谱如下：
+## React 的生命周期有哪些？
+React 生命周期图谱如下：
 ![](./images/react_lifecycle.png)
 根据不同状态可以细分如下：  
 ### 挂载
