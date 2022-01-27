@@ -129,7 +129,7 @@ location /es6/ {
 
 
 
-## vuex原理
+## Vuex原理
 vuex 的内部会初始化一个 store 实例（store 内部会实例化一个 Vue 实例 vm 用于响应式处理，vuex 和 Vue 强关联），之后会将 store 实例挂载到所有组件中，这样所有组件引用的都是同一个 store 实例。访问 store 实例里的数据会被代理到内部的 vm 实例上，这样一旦修改了 store 实例的数据，vm 便会通知所有视图更新数据。
 
 
@@ -154,7 +154,7 @@ VDOM 的本质是一种描述真实 DOM 的数据结构，相比直接修改 DOM
 
 
 
-## vue1 中的 DocumentFragement 有什么作用
+## Vue1 中的 DocumentFragement 有什么作用
 文档碎片主要的作用是用来提高页面性能，考虑如下问题：在 document.body 中添加 100 个 span
 ```js
 for(var i = 0; i < 100; i++) { 
