@@ -3,6 +3,7 @@
 function bubbleSort(arr) {
   const len = arr.length;
   for (let i = 0; i < len; i++) {
+    // 每次排序一轮，就排序好一个元素
     for(let j = 0; j < len - i - 1; j++) {
       if (arr[j] > arr[j + 1]) {
         const temp = arr[j];
