@@ -104,13 +104,13 @@ function getRandomInt(min, max) {
 //将数组的副本循环随机打乱重组一个新数组返回
 //实现方法: 在[0~i]数组中,取出i的值,将他的值与随机一个小于i索引的值对换
 export function shuffle(arr) {
-	let _arr = arr.slice()
-	for (let i = 0; i < _arr.length; i++) {
-		let j = getRandomInt(0, i)
-		let t = _arr[i]
-		_arr[i] = _arr[j]
-		_arr[j] = t
-	}
-	return _arr
+  let _arr = arr.slice()
+  for (let i = 0; i < _arr.length; i++) {
+    let j = getRandomInt(0, i)
+    let t = _arr[i]
+    _arr[i] = _arr[j]
+    _arr[j] = t
+  }
+  return _arr
 }
 ```
