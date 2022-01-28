@@ -72,6 +72,7 @@ export function getTreeKeyPath(tree, value, keyName, childrenKey = 'children') {
     return false;
   };
 
+  parse(tree);
   return path;
 }
 ```
