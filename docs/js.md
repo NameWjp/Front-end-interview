@@ -437,13 +437,15 @@ setTimeout(function() {
 ### 位置关系图
 ![](./images/dom_position.png)
 ### 尺寸关系图
-![](./images/dom_size.png)
+![](./images/dom_size.jpg)
 
 offsetHeight 可以用来计算元素的物理空间，此空间包括内容，padding 和 border（还包括滚动条的宽度，但大多时候滚动条的宽度是计算到 padding 和内容中的）。
 
 scrollHeight 用来计算可滚动容器的大小，包括不可见的部分。
 
 clientHeight 表示可视区域，包括内容和 padding ，如果有滚动条，还需要减去滚动条的宽度。
+
+常见用于判断是否滚动到页面底部的判断：scrollHeight - scrollTop === clientHeight。
 
 
 
