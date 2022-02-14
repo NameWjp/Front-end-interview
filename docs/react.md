@@ -37,7 +37,7 @@ componentDidMount() 会在组件挂载后（插入 DOM 树中）立即调用。�
 ### 更新
 1. static getDerivedStateFromProps()  
 2. shouldComponentUpdate()  
-根据 shouldComponentUpdate() 的返回值，判断 React 组件是否受当前 state 或 props 更改的影响。默认行为是 state 每次发生变化组件都会重新渲染。
+根据 shouldComponentUpdate() 的返回值，判断 React 组件是否受当前 state 或 props 更改的影响。默认父组件的 state 或 prop 更新时，无论子组件的 state、prop 是否更新，都会触发子组件的更新，这会形成很多没必要的 render，浪费很多性能，使用 shouldComponentUpdate 可以优化掉不必要的更新。
 3. render()
 4. getSnapshotBeforeUpdate()  
 getSnapshotBeforeUpdate() 在最近一次渲染输出（提交到 DOM 节点）之前调用。它使得组件能在发生更改之前从 DOM 中捕获一些信息（例如，滚动位置）。此生命周期的任何返回值将作为参数传递给 componentDidUpdate()。
@@ -51,3 +51,61 @@ componentWillUnmount() 会在组件卸载及销毁之前直接调用。在此方
 此生命周期会在后代组件抛出错误后被调用。 它将抛出的错误作为参数，并返回一个值以更新 state
 2. componentDidCatch()  
 此生命周期在后代组件抛出错误后被调用。
+
+
+
+## PureComponent 和 Component 区别
+当使用 component 时，父组件的 state 或 prop 更新时，无论子组件的 state、prop 是否更新，都会触发子组件的更新，这会形成很多没必要的 render，浪费很多性能。pureComponent 的优点在于：pureComponent 在 shouldComponentUpdate 只进行浅层的比较，只要外层对象没变化，就不会触发render，减少了不必要的render。
+
+
+
+## 如何使用 Context 上下文
+1. 创建一个 context 对象
+```js
+const ThemeContext = React.createContext({
+  theme: themes.dark,
+  toggleTheme: () => {},
+});
+```
+2. 使用 context.Provider 提供数据
+```js
+render() {
+  return (
+    <ThemeContext.Provider value={this.state}>
+      <Content />
+    </ThemeContext.Provider>
+  );
+}
+```
+3. 使用 context.Consumer 或者挂载 contextType 消费数据
+```js
+// context.Consumer
+render() {
+  return (
+    <ThemeContext.Consumer>
+      {({theme, toggleTheme}) => (
+        <button
+          onClick={toggleTheme}
+          style={{backgroundColor: theme.background}}>
+          Toggle Theme
+        </button>
+      )}
+    </ThemeContext.Consumer>
+  );
+}
+
+// 挂载 contextType
+class MyClass extends React.Component {
+  ...
+  render() {
+    let value = this.context;
+  }
+}
+MyClass.contextType = ThemeContext;
+```
+需要注意的是 Provider 必须是 Consumer 的祖先元素。
+
+
+
+## React 组件更新流程
+![](./images/react_update.jpeg)
