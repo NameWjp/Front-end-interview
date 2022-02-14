@@ -62,6 +62,7 @@ componentWillUnmount() 会在组件卸载及销毁之前直接调用。在此方
 ## 如何使用 Context 上下文
 1. 创建一个 context 对象
 ```js
+// 初始值为 { theme: themes.dark, toggleTheme: () => {} }
 const ThemeContext = React.createContext({
   theme: themes.dark,
   toggleTheme: () => {},
@@ -83,7 +84,7 @@ render() {
 render() {
   return (
     <ThemeContext.Consumer>
-      {({theme, toggleTheme}) => (
+      {({ theme, toggleTheme }) => (
         <button
           onClick={toggleTheme}
           style={{backgroundColor: theme.background}}>
