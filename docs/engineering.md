@@ -38,19 +38,21 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 ### usedExports
 当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 转换 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
 ### sideEffects
-虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所以代码都是无副作用的，则 webpack 会移除所以未使用的代码。
+虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所有代码都是无副作用的，则 webpack 会移除所有未使用的代码。需要注意的是 webpack 去打包你引入的包的时候会查看该包的 package.json 中的 sideEffects 字段，而非你自己项目里的 sideEffects。所以说自己项目配置的 sideEffects 只是指定你自己写的代码是否有副作用，最后 sideEffects 在不配置的情况下默认会认为你写的代码都是有副作用的（保守安全考虑）。
 ### 最佳实践
 1. 关闭 babel 的 modules 转换，以开启 tree-shaking
 2. 生产环境指定 mode 为 production
 3. 选取 package.json 中 sideEffects 为 false 的包，帮助 webpack tree-shaking
-4. 在自己项目的  package.json 中的 sideEffects 字段标记有副作用的代码，帮助 webpack tree-shaking
+4. 在必要的情况下指定 package.json 中的 sideEffects 字段，用来标记有副作用的代码，帮助 webpack tree-shaking
 
-参考链接：[Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765#heading-18)
+参考链接：  
++ [Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765#heading-18)
++ [tree shaking问题排查指南](https://zhuanlan.zhihu.com/p/491391823)
 
 
 
-## webpack 的 sideEffects 字段的作用
-当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段标记是用来标记哪些文件是 side-effect-free（无副作用），一般用于库开发者标记自己的库是否是无副作用的（注意，一旦标记为无副作用，即使你代码中有副作用代码，webpack 也会 tree-shaking 掉，省去了 webpack 的一些静态语法分析的步骤），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。  
+## webpack 的 sideEffects 字段应该怎么用
+当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段标记是用来标记哪些文件是 side-effect-free（无副作用）（注意，一旦标记为无副作用，并且使用方未使用你导出的变量，那么即使你代码中有副作用代码，webpack 也会 tree-shaking 掉），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。
 
 参考链接：[Webpack 中的 sideEffects 到底该怎么用](https://zhuanlan.zhihu.com/p/40052192)
 
