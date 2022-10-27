@@ -13,6 +13,6 @@ git init
 git add -A
 git commit -m 'deploy'
 
-git push -f git@github.com:NameWjp/Front-end-interview.git master:gh-pages
+git push -f git@github.com:NameWjp/Front-end-interview.git main:gh-pages
 
 cd -
