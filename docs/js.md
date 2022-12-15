@@ -28,6 +28,7 @@ js里采用 IEEE754 标准，采用双精度存储数值，存储结构如下。
 参考：
 + [https://blog.windstone.cc/js/data-types/number/floating.html#%E8%AE%A1%E7%AE%97%E8%AF%AF%E5%B7%AE](https://blog.windstone.cc/js/data-types/number/floating.html#%E8%AE%A1%E7%AE%97%E8%AF%AF%E5%B7%AE)
 + [https://www.zhihu.com/question/29010688](https://www.zhihu.com/question/29010688)
++ [https://github.com/camsong/blog/issues/9](https://github.com/camsong/blog/issues/9)
 
 
 ## 为什么 0.1 + 0.2 与 0.3 不相等，如何解决
