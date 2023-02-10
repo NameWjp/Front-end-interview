@@ -115,3 +115,21 @@ JS 的执行会阻塞 DOM 树的解析，将 JS 放置到文件底部，等 HTML
 
 ## 大量计算使用 Web Workers
 Web Worker 使用其他工作线程从而独立于主线程之外，它可以执行任务而不干扰用户界面。一个 worker 可以将消息发送到创建它的 JavaScript 代码, 通过将消息发送到该代码指定的事件处理程序（反之亦然）。Web Worker 适用于那些处理纯数据，或者与浏览器 UI 无关的长时间运行脚本。
+
+
+
+## DNS-prefetch 和 Preconnect
+当浏览器打开跨域外链（跳转到别的网页）的时候必须先将该域名解析为 IP 地址，然后浏览器才能发出请求。此过程称为 DNS 解析，[DNS-prefetch](https://developer.mozilla.org/zh-CN/docs/Web/Performance/dns-prefetch) (DNS 预获取) 是尝试在请求资源之前解析域名，之后打开可以加快网页的加载速度，注意 dns-prefetch 仅对跨域域上的 DNS 查找有效，非跨域在打开网页的时候就已经解析过了，不需要多此一举，使用方式如下：
+```html
+<head>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com/">
+</head>
+```
+考虑将 dns-prefetch 与 preconnect(预连接)提示配对。尽管 dns-prefetch 仅执行 DNS 查找，但preconnect 会建立与服务器的连接。如果站点是通过 HTTPS 服务的，则此过程包括 DNS 解析，建立 TCP 连接以及执行 TLS 握手。将两者结合起来可提供进一步减少跨域请求的感知延迟的机会。您可以安全地将它们一起使用，如下所示：
+```html
+<head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com/">
+</head>
+```
+一些资源，如字体，以匿名模式加载。在这种情况下，使用 preconnect 应该设置 crossorigin 属性。如果您省略它，浏览器将只执行DNS查找。
