@@ -133,3 +133,77 @@ Web Worker 使用其他工作线程从而独立于主线程之外，它可以执
 </head>
 ```
 一些资源，如字体，以匿名模式加载。在这种情况下，使用 preconnect 应该设置 crossorigin 属性。如果您省略它，浏览器将只执行DNS查找。
+
+
+
+## preload 和 prefetch
+### preload
+[preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) 是 `<link>` 标签 `rel` 属性的属性值，同时需要配合 `as` 属性使用。  
+
+`as` 指定将要预加载的内容的类型，使得浏览器能够：  
+
+1. 更精确地优化资源加载优先级。
+2. 匹配未来的加载需求，在适当的情况下，重复利用同一资源。
+3. 为资源应用正确的内容安全策略。
+4. 为资源设置正确的 Accept 请求头。
+
+看一下这个示例：
+```html
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" as="script">
+```
+这种做法将把 `<link>` 标签塞入一个预加载器中。这个预加载器在不阻塞页面 onload 事件的情况下，去加载资源。我们可以通过以下两个示例来作一个对比：
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+      console.time('load')
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/2.1.10/chart/bar.js"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<script>
+window.onload = () => {
+  console.timeEnd('load') // load: 1449.759033203125ms
+}
+</script>
+</body>
+</html>
+```
+上面这个示例从加载到触发 onload 事件需要大概 1400 ms 的时间。再看一下使用 preload 预加载的时间：
+```html
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" as="script">
+<link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/echarts/2.1.10/chart/bar.js" as="script">
+<link rel="preload" href="https://unpkg.com/element-ui/lib/index.js" as="script">
+<link rel="preload" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" as="style">
+
+window.onload = () => {
+  console.timeEnd('load') // load: 10.8818359375ms
+}
+```
+用 preload 来加载资源，只需要 10 ms 就触发了 onload 事件，说明同样是下载文件，使用 preload 不会阻塞 onload 事件。注意这样加载的话无法在 onload 中使用这些文件提供的方法，适合加载一些无关紧要的文件。
+
+### prefetch
+[prefetch](https://web.dev/i18n/en/link-prefetch/) 和 `preload` 不同，使用 `prefetch` 属性指定的资源将在浏览器空闲时间下下载，使用方式如下：
+```html
+<head>
+  <link rel="prefetch" href="/articles/" as="document">
+</head>
+```
+该 as 属性帮助浏览器设置正确的标头，并确定资源是否已在缓存中。此属性的示例值包括：document、script、style、font、image 等。
+
+### 区别
++ preload 是告诉浏览器页面必定需要的资源，浏览器一定会加载这些资源。
++ prefetch 是告诉浏览器页面可能需要的资源，浏览器不一定会加载这些资源。
++ 对于当前页面很有必要的资源使用 preload，对于可能在将来的页面中使用的资源使用 prefetch。
+
+
+
+## 使用 defer 加载 js
+defer 的特性是并行下载，延迟执行，能够更快的呈现页面。defer 和 async 的区别见：[defer-和-async-的区别](html.html#defer-和-async-的区别)
