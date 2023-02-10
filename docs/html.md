@@ -41,7 +41,7 @@ src 和 href 都是用来引用外部的资源，他们的区别如下：
 
 ## preload 和 prefetch
 ### preload
-`preload` 是 `<link>` 标签 `rel` 属性的属性值，同时需要配合 `as` 属性使用。  
+[preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload) 是 `<link>` 标签 `rel` 属性的属性值，同时需要配合 `as` 属性使用。  
 
 `as` 指定将要预加载的内容的类型，使得浏览器能够：  
 
@@ -93,16 +93,18 @@ window.onload = () => {
 用 preload 来加载资源，只需要 10 ms 就触发了 onload 事件，说明同样是下载文件，使用 preload 不会阻塞 onload 事件。注意这样加载的话无法在 onload 中使用这些文件提供的方法，适合加载一些无关紧要的文件。
 
 ### prefetch
-`prefetch` 和 `preload` 不同，使用 `prefetch` 属性指定的资源将在浏览器空闲时间下下载。
-
-在资源的请求头如果发现有下面这个属性，就代表它是通过 `prefetch` 加载的：
-```js
-purpose: prefetch
+[prefetch](https://web.dev/i18n/en/link-prefetch/) 和 `preload` 不同，使用 `prefetch` 属性指定的资源将在浏览器空闲时间下下载，使用方式如下：
+```html
+<head>
+  <link rel="prefetch" href="/articles/" as="document">
+</head>
 ```
+该 as 属性帮助浏览器设置正确的标头，并确定资源是否已在缓存中。此属性的示例值包括：document、script、style、font、image 等。
 
-另外，空闲时间是如何确定、如何获取的，目前还没有相关 API。
-
-
+### 区别
++ preload 是告诉浏览器页面必定需要的资源，浏览器一定会加载这些资源。
++ prefetch 是告诉浏览器页面可能需要的资源，浏览器不一定会加载这些资源。
++ 对于当前页面很有必要的资源使用 preload，对于可能在将来的页面中使用的资源使用 prefetch。
 
 ## defer 和 async 的区别
 defer 的执行时间是在所有元素解析完成之后，DOMContentLoaded 事件触发之前。多个 defer 定义的 js 会按照它们的引入顺序执行。

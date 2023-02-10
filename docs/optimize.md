@@ -125,7 +125,7 @@ Web Worker 使用其他工作线程从而独立于主线程之外，它可以执
     <link rel="dns-prefetch" href="https://fonts.gstatic.com/">
 </head>
 ```
-考虑将 dns-prefetch 与 preconnect(预连接)提示配对。尽管 dns-prefetch 仅执行 DNS 查找，但preconnect 会建立与服务器的连接。如果站点是通过 HTTPS 服务的，则此过程包括 DNS 解析，建立 TCP 连接以及执行 TLS 握手。将两者结合起来可提供进一步减少跨域请求的感知延迟的机会。您可以安全地将它们一起使用，如下所示：
+考虑将 dns-prefetch 与 preconnect（预连接）提示配对。尽管 dns-prefetch 仅执行 DNS 查找，但 preconnect 会建立与服务器的连接。如果站点是通过 HTTPS 服务的，则此过程包括 DNS 解析，建立 TCP 连接以及执行 TLS 握手，将两者结合起来可提供进一步减少跨域请求的感知延迟的机会，如下所示：
 ```html
 <head>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
