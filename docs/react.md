@@ -78,7 +78,7 @@ render() {
   );
 }
 ```
-3. 使用 context.Consumer 或者挂载 contextType 消费数据
+3. 使用 context.Consumer 或者挂载 contextType 或者 useContext 消费数据
 ```js
 // context.Consumer
 render() {
@@ -103,6 +103,9 @@ class MyClass extends React.Component {
   }
 }
 MyClass.contextType = ThemeContext;
+
+// useContext
+const value = useContext(ThemeContext);
 ```
 需要注意的是 Provider 必须是 Consumer 的祖先元素。
 

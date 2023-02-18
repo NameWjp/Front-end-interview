@@ -17,7 +17,7 @@ viewport 的字面意思为视图窗口，在移动 web 开发中使用。表示
 为了显示更多的内容，大多数的浏览器会把自己的视窗视口扩大，简易的理解，就是让原本320像素的屏幕宽度能够容下980像素甚至更宽的内容（将网页等比例缩小）。
 
 ### viewport属性值
-+ width 设置 layout viewport 的宽度，为一个正整数，或字符串 "width-device"。device-width 指的是设备的物理宽度，width 是页面宽度。
++ width 设置 layout viewport 的宽度，为一个正整数，或字符串 "device-width"。device-width 指的是设备的物理宽度，width 是页面宽度。
 + initial-scale 设置页面的初始缩放值，为一个数字，可以带小数
 + minimum-scale 允许用户的最小缩放值，为一个数字，可以带小数
 + maximum-scale 允许用户的最大缩放值，为一个数字，可以带小数
@@ -28,7 +28,7 @@ viewport 的字面意思为视图窗口，在移动 web 开发中使用。表示
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 ```
-这里我们设置 viewport 为设备宽度，然后配合 rem 布局即可实现页面等比缩放的功能，见模板仓库：[vue-h5-template](https://github.com/NameWjp/vue-h5-template)
+这里我们设置 viewport 为设备宽度，然后配合 rem 布局即可实现页面等比缩放的功能，见模板仓库：[vue-h5-template](https://github.com/NameWjp/vue-h5-template)，或者使用 vw/vh 也可以比较方便的实现响应式布局。
 
 
 

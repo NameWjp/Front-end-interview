@@ -54,10 +54,15 @@ Content-Type：只限于三个值 application/x-www-form-urlencoded、 multipart
 
 
 ## 在浏览器输入 URL 回车之后发生了什么
-1. URL 解析
-2. DNS 查询
+1. URL 解析  
+地址解析、检查缓存等操作。
+2. DNS 查询  
+查询路线：浏览器缓存 => 本机 Host 文件 => 操作系统缓存 => 路由器缓存 => DNS 服务器 => 根域名服务器
 3. 建立 TCP 连接，三次握手
-4. 服务器处理请求
-5. 浏览器接受请求，渲染页面
+4. 服务器处理请求  
+5. 浏览器接受请求  
+资源解压、根据 MIME 类型做相应的处理、重定向等
+6. 渲染页面  
+html、css 的解析，构建渲染树，视图渲染，JavaScript 的编译和执行等
 
 详细解析参考：[https://zhuanlan.zhihu.com/p/80551769](https://zhuanlan.zhihu.com/p/80551769)

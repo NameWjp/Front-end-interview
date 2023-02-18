@@ -1,26 +1,58 @@
-## 什么是 xss 
-xss攻击的本质是代码注入，利用浏览器拼接成任意的 javascript 去执行自己想做的事情。防御的方法很简单，不要相信用户的任何输入，对于用户的任何输入要进行检查、过滤和转义。
+## 什么是 XSS 
+XSS 攻击的本质是代码注入，利用浏览器拼接成任意的 javascript 去执行自己想做的事情。防御的方法很简单，不要相信用户的任何输入，对于用户的任何输入要进行检查、过滤和转义。
 
 
 
-## 什么是 csrf
-csrf攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，但从同源政策来看有两种不跨域，一是 GET 请求通过请求资源的方式，二是 POST 请求通过 form 表单的形式），而每个 http 请求浏览器都会自动携带对应域名下的 cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。另一种方法是设置 cookie 的 SameSite 为 Lax，限制跨域请求 cookie 的发送，能够有效的防止 csrf 攻击。
+## 什么是 CSRF
+CSRF 攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，但从同源政策来看有两种不跨域，一是 GET 请求通过请求资源的方式，二是 POST 请求通过 form 表单的形式），而每个 http 请求浏览器都会自动携带对应域名下的 Cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。另一种方法是设置 Cookie 的 SameSite 为 Lax，限制跨域请求 Cookie 的发送，能够有效的防止 CSRF 攻击。
 
 
 
-## cookies 的保护方式
+## Cookie 的保护方式
 ### Secure
-当 cookies 的 Secure 属性设置为 true 时，表示创建的 Cookie 会被以安全的形式向服务器传输，也就是只能在 HTTPS 连接中被浏览器传递到服务器端进行会话验证，如果是 HTTP 连接则不会传递该 cookie 信息，所以不会被窃取到 Cookie 的具体内容。就是只允许在加密的情况下将 cookie 加在数据包请求头部，防止 cookie 被带出来。
-## HttpOnly
+当 Cookie 的 Secure 属性设置为 true 时，表示创建的 Cookie 会被以安全的形式向服务器传输，也就是只能在 HTTPS 连接中被浏览器传递到服务器端进行会话验证，如果是 HTTP 连接则不会传递该 Cookie 信息，所以不会被窃取到 Cookie 的具体内容。就是只允许在加密的情况下将 Cookie 加在数据包请求头部，防止 Cookie 被带出来。
+### HttpOnly
 如果在 Cookie 中设置了 "HttpOnly" 属性，那么通过程序(JS 脚本、Applet 等)将无法读取到 Cookie 信息，这样能有效的防止XSS攻击。
-## SameSite
-SameSite 是用来限制 cookie 的跨域发送，用来防止 CSRF 攻击和用户追踪。当为 Strict 时会完全禁止第三方 Cookie，由于这个规则过于严格，可能造成非常不好的用户体验。比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。当为 Lax 时大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。当为 None 时（必须设置 Secure 属性，否则 None 设置无效）任何跨域请求都会发送。
-## 总结
-Secure 属性是防止信息在传递的过程中被监听捕获后信息泄漏，HttpOnly 属性的目的是防止程序获取 cookie 后进行攻击，SameSite 是为了防止 CSRF 攻击和用户追踪。但是这几个属性并不能解决 cookie 在本机出现的信息泄漏的问题(FireFox 的插件 FireBug 能直接看到 cookie 的相关信息)。
+### SameSite
+SameSite 是用来限制 Cookie 的跨域发送，用来防止 CSRF 攻击和用户追踪。当为 Strict 时会完全禁止第三方 Cookie，由于这个规则过于严格，可能造成非常不好的用户体验。比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。当为 Lax 时大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。当为 None 时（必须设置 Secure 属性，否则 None 设置无效）任何跨域请求都会发送。
+### SameParty（实验性）
+#### SameSite 的问题
+SameSite 虽然能够解决第三方登录问题，但是会阻止在使用危险 HTTP 方法进行请求携带的三方 Cookie，例如 POST 方式。同时，使用 JavaScript 脚本发起的请求也无法携带三方 Cookie。所以有这些需求的网站将不得不设置  SameSite=None，这意味着这种 Cookie 又失去了跨站点请求伪造 (CSRF) 保护。
+#### First-Party Sets 策略
+First-Party Sets 提出了一种明确定义在同一主体下拥有和运营的多个站点关系的方法。比如 .tmall.com、taobao.com 都可以被定义为同一主体运营 。为了防止滥用，First-Party Sets 有一些限制：
+
++ First-Party Sets 中的域必须由同一组织拥有和运营。
++ 所有域名应该作为一个组被用户识别。
++ 所有域名应该共享一个共同的隐私政策。  
+
+每一个需要用到 First-Party Sets 策略的域名都应该把一个 JSON 配置托管在 /.well-known/first-party-set 路由下。例如 conardli.top 的配置应该托管在 https://conardli.top/.well-known/first-party-set 下：
+```json
+{
+  "owner": "conardli.top",
+  "version": 1,
+  "members": ["conardli.com", "conardli.cn"]
+}
+```
+另外 conardli.com、 conardli.cn 两个域名均需要增加所有者的配置：
+```json
+{
+  "owner": "conardli.top"
+}
+```
+#### SameParty 属性
+SameParty 属性就是配合上面的 First-Party Sets 策略来的，开启了 First-Party Sets 域名下需要共享的 Cookie 都需要增加 SameParty 属性，例如，如果我在 conardli.top 下设置了下面的 Cookie
+```js
+Set-Cookie: name=lishiqi; Secure; SameSite=Lax; SameParty
+```
+这时我在 conardli.cn 下发送 conardli.top 域名的请求，Cookie 也可以被携带了，但是如果我在另外一个网站，例如 eval.site 下发送这个请求， Cookie 就不会被携带。
+
+### 总结
+Secure 属性是防止信息在传递的过程中被监听捕获后信息泄漏，HttpOnly 属性的目的是防止程序获取 Cookie 后进行攻击，SameSite 是为了防止 CSRF 攻击和用户追踪。但是这几个属性并不能解决 Cookie 在本机出现的信息泄漏的问题(FireFox 的插件 FireBug 能直接看到 Cookie 的相关信息)。最后 SameParty 的出现有望彻底解决第三方登录 Cookie 问题。
 
 参考：  
 + [What is the difference between SameSite="Lax" and SameSite="Strict"?](https://stackoverflow.com/questions/59990864/what-is-the-difference-between-samesite-lax-and-samesite-strict)  
 + [Cookie 的 SameSite 属性](https://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html)
++ [详解 Cookie 新增的 SameParty 属性](https://juejin.cn/post/7002011181221167118)
 
 
 

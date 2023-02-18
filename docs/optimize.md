@@ -105,7 +105,19 @@ JS 的执行会阻塞 DOM 树的解析，将 JS 放置到文件底部，等 HTML
 + 用 JavaScript 修改样式时，最好不要直接写样式，而是替换 class 来改变样式。
 + 如果要对 DOM 元素执行一系列操作，可以将 DOM 元素脱离文档流，修改完成后，再将它带回文档。推荐使用隐藏元素（display:none）或文档碎片（DocumentFragement），都能很好的实现这个方案。
 + 如果要插入大量 DOM 不要循环插入，使用文档碎片（DocumentFragement）包裹只插入一次。
-
++ JS 获取 Layout 属性值（如：offsetLeft、scrollTop、getComputedStyle 等）会引起重排，因此不要在循环中反复获取值，而是使用缓存，例如：  
+```js
+for(let i = 0; i ＜ childs.Length; 1++) {
+  childs[i].style.width = node.offsetWidth + "px";
+}
+```
+优化后：
+```js
+const width = node.offsetWidth;
+for(let i = 0; i ＜ childs.Length; 1++) {
+  childs[i].style.width = width + "px";
+}
+```
 
 
 ## 使用事件委托

@@ -30,8 +30,8 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 
 ## 聊聊 webpack 的 tree-shaking  
 ### 开启步骤
-1. 关闭 babel 的模块语法转换
-在 babel 配置中 modules 设置为 false，这样 babel 就不会将我们写的 es6 Module 的导入方式进行转换（tree-shaking 依赖 es6 的 Module 语法）
+1. 关闭 babel 的模块语法转换  
+在 @babel/preset-env 配置中 modules 设置为 false，这样 babel 就不会将我们写的 es6 Module 的导入方式进行转换（tree-shaking 依赖 es6 的 Module 语法）
 2. 设置 mode 为 production
 3. 确保 usedExports 为 true（默认为 true）
 4. 必要的情况下指定 sideEffects
