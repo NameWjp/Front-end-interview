@@ -14,7 +14,7 @@ CSRF 攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，�
 ### HttpOnly
 如果在 Cookie 中设置了 "HttpOnly" 属性，那么通过程序(JS 脚本、Applet 等)将无法读取到 Cookie 信息，这样能有效的防止XSS攻击。
 ### SameSite
-SameSite 是用来限制 Cookie 的跨域发送，用来防止 CSRF 攻击和用户追踪。当为 Strict 时会完全禁止第三方 Cookie，由于这个规则过于严格，可能造成非常不好的用户体验。比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。当为 Lax 时大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。当为 None 时（必须设置 Secure 属性，否则 None 设置无效）任何跨域请求都会发送。
+SameSite 是用来限制 Cookie 的跨域发送，用来防止 CSRF 攻击和用户追踪。当为 Strict 时会完全禁止第三方 Cookie，由于这个规则过于严格，可能造成非常不好的用户体验。比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。当为 Lax（已经成为默认值） 时大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。当为 None 时（必须设置 Secure 属性，否则 None 设置无效）任何跨域请求都会发送。
 ### SameParty（实验性）
 #### SameSite 的问题
 SameSite 虽然能够解决第三方登录问题，但是会阻止在使用危险 HTTP 方法进行请求携带的三方 Cookie，例如 POST 方式。同时，使用 JavaScript 脚本发起的请求也无法携带三方 Cookie。所以有这些需求的网站将不得不设置  SameSite=None，这意味着这种 Cookie 又失去了跨站点请求伪造 (CSRF) 保护。
