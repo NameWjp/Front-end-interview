@@ -1,3 +1,19 @@
+## GET/POST 请求有什么区别
+GET 和 POST，两者是 HTTP 协议中发送请求的方法，本质上都是 TCP 链接，并无差别。但是由于 HTTP 的规定和浏览器/服务器的限制，导致他们在应用过程中会体现出一些区别。
+### GET
+GET 表示读取一个资源。比如 Get 到一个 html 文件，反复读取不应该对访问的数据有副作用。因为 GET 是读取，所以可以对 GET 请求的数据做缓存。
+### POST
+POST 方法用于将实体提交到指定的资源，通常导致在服务器上的状态变化或副作用。
+### 区别
++ GET 参数通过URL传递，POST 放在 Request body中
++ GET 请求在 URL 中传送的参数是有长度限制（浏览器的限制），而POST没有。
++ GET 请求会被浏览器主动 cache，而 POST 不会。
++ POST 比 GET 安全，因为数据在地址栏上不可见。
+
+参考：[说一下 GET 和 POST 的区别](https://github.com/febobo/web-interview/issues/145)
+
+
+
 ## 一个 TCP 连接能发几个 HTTP 请求?
 HTTP/1.0 版本协议一个 TCP 只能发送一个 HTTP 请求，但是服务器实现了 Connection: Keep-Alive，因此一个 TCP 可以发送多个 HTTP 请求但请求不能并发，大多数浏览器只允许同时对同一域名建立 6 个 TCP 连接，所以大多数浏览器同一时间只能发送 6。  
 HTTP/1.1 版本将 Connection: Keep-Alive 纳入标准。  

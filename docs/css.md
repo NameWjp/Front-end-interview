@@ -117,3 +117,49 @@ flex 是一个简写属性，包含 flex-grow、flex-shrink、flex-basis 三个�
 
 ## fixed 元素相对于什么定位
 css3 之前，fixed 只相对于屏幕视口（viewport）定位，需要注意的是，如果是 iframe 内的 fixed 元素，则是相对于 iframe 定位的。css3 之后，如果 fixed 元素的父元素的 transform 不为 none，则会相对于该父元素定位。
+
+
+
+## 有没有遇到过 z-index 小的反而在上层的情况？
+z-index 的比较只有在同一个层叠上下文中才有意义，并且对 position 属性值不是 static 的元素创建层叠上下文。小的在上面的原因是小的 z-index 比另外一个的父级或祖先的层叠上下文的 z-index 大。
+
+
+
+## width:100% 与 width:auto 的区别
+```html
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  .parent {
+    width: 800px;
+    margin: 50px auto;
+    border: 2px solid red;
+  }
+  .child1 {
+    background: orange;
+  }
+  .child2 {
+    width: 100%;
+    margin-left: 100px;
+    padding-left: 100px;
+    background: blue;
+  }
+  .child3 {
+    width: auto;
+    margin-left: 100px;
+    padding-left: 100px;
+    background: green;
+  }
+</style>
+<body>
+  <div class="parent">
+    <div class="child1">看看我的宽度</div>
+    <div class="child2">看看我的宽度</div>
+    <div class="child3">看看我的宽度</div>
+  </div>
+</body>
+```
+![](./images/css_1.png)
+width: 100% 代表和父元素宽度一样，width: auto 代表宽带自适应。

@@ -509,3 +509,12 @@ encodeURIComponent 设计出来的目的是为了编码 URL 的查询参数的�
 1. 首先遍历所有数值键（如果能转成数字的话），按照数值升序排列。
 2. 其次遍历所有字符串键，按照加入时间升序排列。
 3. 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+
+
+## Iterator 和 for...of 循环
+遍历器（Iterator）是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作。Iterator 的作用有三个：一是为各种数据结构，提供一个统一的、简便的访问接口；二是使得数据结构的成员能够按某种次序排列；三是 ES6 创造了一种新的遍历命令 for...of 循环，Iterator 接口主要供 for...of 消费。
+
+原生具备 Iterator 接口的数据结构如下：Array、Map、Set、String、TypedArray、函数的 arguments 对象、NodeList 对象。
+
+参考：[Iterator 和 for...of 循环](https://es6.ruanyifeng.com/#docs/iterator#Iterator%EF%BC%88%E9%81%8D%E5%8E%86%E5%99%A8%EF%BC%89%E7%9A%84%E6%A6%82%E5%BF%B5)

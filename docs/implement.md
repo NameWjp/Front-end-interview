@@ -462,3 +462,61 @@ class MyPromise {
 };
 ```
 参考链接：[https://juejin.cn/post/6945319439772434469](https://juejin.cn/post/6945319439772434469)
+
+
+
+## Promise.All 和 Promise.AllSettled 的实现
+```js
+function PromiseAll(promises) {
+  const result = [];
+  const len = promises.length;
+  let count = 0;
+  return new Promise((resolve, reject) => {
+    promises.forEach((p, index) => {
+      p.then((res) => {
+        result[index] = res;
+        count += 1;
+        if (count === len) {
+          resolve(result);
+        }
+      }).catch((err) => {
+        result[index] = err;
+        count += 1;
+        if (count == len) {
+          reject(result);
+        }
+      })
+    })
+  })
+}
+
+function PromiseAllSettled(promises) {
+  const result = [];
+  const len = promises.length;
+  let count = 0;
+  return new Promise((resolve) => {
+    promises.forEach((p, index) => {
+      p.then((res) => {
+        result[index] = {
+          status: 'fulfilled',
+          value: res,
+        };
+        count += 1;
+        if (count === len) {
+          resolve(result);
+        }
+      }).catch((err) => {
+        result[index] = {
+          status: 'rejected',
+          reason: err
+        };
+        count += 1;
+        if (count == len) {
+          resolve(result);
+        }
+      })
+    })
+  })
+}
+```
+可以看到它们两个主要的区别在处理 reject 上，Promise.All 只要有一个 reject，就会走 reject 回调。而 Promise.AllSettled 始终会走 resolve 回调，返回结果会描述每个子 promise 的状态。
