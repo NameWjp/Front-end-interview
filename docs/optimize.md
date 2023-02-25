@@ -219,3 +219,20 @@ window.onload = () => {
 
 ## 使用 defer 加载 js
 defer 的特性是并行下载，延迟执行，能够更快的呈现页面。defer 和 async 的区别见：[defer-和-async-的区别](html.html#defer-和-async-的区别)
+
+
+
+## 开启 gzip 压缩
+gzip 是网站压缩加速的一种技术，对于开启后可以加快我们网站的打开速度，原理是经过服务器压缩，客户端浏览器快速解压的原理，可以大大减少了网站的流量。nginx 开启 gzip 配置如下：
+```
+server{
+  gzip on; # 是否开启gzip
+  gzip_buffers 32 4K; # 用于处理请求压缩的缓冲区数量和大小
+  gzip_comp_level 6; # 推荐6 压缩级别(级别越高,压的越小,越浪费CPU计算资源)
+  gzip_min_length 1k; # 开始压缩的最小长度(再小就不要压缩了,意义不在)
+  gzip_types application/javascript text/css text/xml; # 对哪些类型的文件用压缩 如txt,xml,html ,css
+  gzip_disable "MSIE [1-6]\."; #正则匹配UA，配置禁用gzip条件。此处表示ie6及以下不启用gzip（因为ie低版本不支持）
+  gzip_http_version 1.1; # 开始压缩的http协议版本(可以不设置,目前几乎全是1.1协议)
+  gzip_vary on; # 是否传输gzip压缩标志
+}
+```
