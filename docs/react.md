@@ -111,5 +111,36 @@ const value = useContext(ThemeContext);
 
 
 
+## React 父组件调用子组件的方法
+1. 使用 forwardRef 和 useImperativeHandle 在子组件中暴露方法
+```jsx
+function FancyInput(props, ref) {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current.focus();
+    }
+  }));
+  return <input ref={inputRef} ... />;
+}
+
+FancyInput = forwardRef(FancyInput);
+```
+
+2. 父组件使用 ref 调用子组件方法
+```jsx
+function parentContainer() {
+  const childRef = useRef();
+
+  useEffect(() => {
+    childRef.current.focus();
+  }, []);
+
+  return <FancyInput ref={childRef} />
+}
+```
+
+
+
 ## React 组件更新流程
 ![](./images/react_update.jpeg)

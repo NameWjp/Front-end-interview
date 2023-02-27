@@ -84,17 +84,48 @@ export function getTreeKeyPath(tree, value, keyName, childrenKey = 'children') {
 
 
 ## 列表结构转树结构
+### 递归
+使用该方法虽然易懂，但是当 source 列表比较大的时候性能会比较差。
 ```js
 export function listToTree(source, pid = 0) {
+  const list = JSON.parse(JSON.stringify(source)); // 避免影响之前的数组
   const result = [];
 
-  source.forEach(item => {
+  list.forEach(item => {
     if (item.parentId === pid) {
       item.children = listToTree(source, item.id);
       result.push(item);
     }
   });
 
+  return result;
+}
+```
+### 循环
+该方法比上面的递归性能更好。
+```js
+export function listToTree(source, rootId = 0) {
+  const list = JSON.parse(JSON.stringify(source)); // 避免影响之前的数组
+  const map = new Map();
+  const result = [];
+
+  list.forEach((item) => {
+    // 如果父节点在后面出现，需要合并 children 属性
+    item = { ...item, ...map.get(item.id) };
+    map.set(item.id, item);
+
+    if (item.id === rootId) {
+      result.push(item);
+    } else {
+      const parentItem = map.get(item.parentId) || {};
+      if (!parentItem.children) {
+        parentItem.children = [];
+      }
+      parentItem.children.push(item);
+      map.set(item.parentId, parentItem);
+    }
+  });
+  
   return result;
 }
 ```
@@ -123,3 +154,62 @@ export function shuffle(arr) {
   return _arr;
 }
 ```
+
+
+
+## 二叉树遍历(前序、中序、后序、广度优先)
+### 前序遍历
+前序遍历是先输出节点的值，再递归遍历左右子树，前序遍历是一个深度优先的遍历方法。
+```js
+function recursionTreeNode(root) {
+  if (root != null) {
+    console.log(root.val);
+    recursionTreeNode(root.left);
+    recursionTreeNode(root.right);
+  }
+}
+```
+![](./images/arithmetic_1.gif)
+### 中序遍历
+中序遍历是先遍历左子树，再输出当前节点，最后遍历右子树。
+```js
+function recursionTreeNode(root) {
+  if (root != null) {
+    recursionTreeNode(root.left);
+    console.log(root.val);
+    recursionTreeNode(root.right);
+  }
+}
+```
+![](./images/arithmetic_2.gif)
+### 后序遍历
+后序遍历是先递归遍历左右子树，再输出节点的值。
+```js
+function recursionTreeNode(root) {
+  if (root != null) {
+    recursionTreeNode(root.left);
+    recursionTreeNode(root.right);
+    console.log(root.val);
+  }
+}
+```
+![](./images/arithmetic_3.gif)
+### 广度优先遍历
+广度优先遍历就是按树的深度，从根节点开始，一层一层向底部遍历。
+```js
+function recursionTreeNode(root) {
+  const stack = [root];
+
+  while (stack.length) {
+    let tempNode = stack.pop();
+    console.log(tempNode.val)
+
+    if (tempNode.children.length) {
+      stack.push(...tempNode.children);
+    }
+  }
+
+  return null;
+}
+```
+![](./images/arithmetic_4.gif)
