@@ -28,7 +28,7 @@
 
 
 
-## 跨源资源共享（CORS）
+## 跨域资源共享（CORS）
 CORS 是一个W3C标准，全称是"跨域资源共享"（Cross-origin resource sharing）。它允许浏览器向跨源服务器，发出 XMLHttpRequest 请求，从而克服了 ajax 只能同源使用的限制。浏览器将 CORS 请求分为两类：简单请求和非简单请求。
 
 ### 简单请求
