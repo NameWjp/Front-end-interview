@@ -118,6 +118,7 @@ for(let i = 0; i ＜ childs.Length; 1++) {
   childs[i].style.width = width + "px";
 }
 ```
++ 对于不使用的页面，使用 display: none 隐藏，使其不参与 Layout Tree 的计算，节省 render 时间，见：[display: none 对 浏览器 Layout Tree 的影响](https://github.com/NameWjp/blog/issues/101)
 
 
 ## 使用事件委托
