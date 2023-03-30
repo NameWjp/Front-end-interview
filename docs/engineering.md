@@ -1,5 +1,5 @@
 ## webpack Loader 的加载顺序
-webpack 的 Loader 加载是从有往做依次加载的，例如：
+webpack 的 Loader 加载是从右往左依次加载的，例如：
 ```js
 {
   test: /\.less$/,
