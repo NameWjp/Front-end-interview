@@ -107,3 +107,23 @@ type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string &
 在 TypeScript 中，对象、类、数组和函数的返回值类型都是协变关系，而函数的参数类型是逆变关系，所以 infer 位置如果在函数参数上，就会遵循逆变原则。
 
 参考：[Typescript infer 关键字](https://github.com/ascoders/weekly/blob/master/%E5%89%8D%E6%B2%BF%E6%8A%80%E6%9C%AF/207.%E7%B2%BE%E8%AF%BB%E3%80%8ATypescript%20infer%20%E5%85%B3%E9%94%AE%E5%AD%97%E3%80%8B.md)
+
+
+
+### 设计一个泛型，接受一个对象类型，返回一个可选的 key 的对象类型，但不能是空对象
+```ts
+interface Todo {
+  title: string
+  description: string
+  completed: boolean
+}
+
+type Optional<T> = {
+  [key in keyof T]: {
+    [newKey in key]: T[newKey]
+  }
+}[keyof T]
+
+type B = Optional<Todo>;
+const b: B = {} // 报错
+```
