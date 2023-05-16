@@ -199,3 +199,9 @@ MVP 是由 MVC 演化而来，其特点是 View 和 Model 层无法直接通信�
 ### MVVM
 ![](./images/MVVM.png)  
 和 MVP 相似，MVVM 的 View 和 Model 层也无法直接通信，而是通过 ViewModel 来通信的。与 MVP 不同的是 MVVM 的 ViewModel 往往是框架提供的（例如 vue），不再需要自己手动同步。用户只需要关注 View 层和 Model 层的逻辑，大大的简化了复杂性。
+
+
+
+## 观察者模式和发布订阅模式的区别
+![](./images/other_3.jpeg) 
+观察者模式里，订阅者和发布者是松耦合的关系，一个发布者对应多个订阅者。发布订阅模式里，订阅者和发布者完全解耦，订阅者和发布者通过中间人联系。

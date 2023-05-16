@@ -112,3 +112,109 @@ module.exports = Plugin
 `__esModule` 是为了解决 CJS 和 ESM 互转的问题，标记该代码是由 ESM 打包成 CJS 的，详见：[CJS和ESM的来龙去脉](https://github.com/NameWjp/blog/issues/54)
 2. `__PURE__`  
 babel 的转换或 webpack 的 tree-shaking 过程中会使用 `__PURE__` 标记未使用代码，在后续的压缩中会忽略 `__PURE__` 标记的代码，当然也可以手动添加 `__PURE__` 注解，详见：[聊聊 webpack 的 tree-shaking](#聊聊-webpack-的-tree-shaking)
+
+
+
+## webpack splitChunks 如何使用
+splitChunks 是 webpack 用来分包的一个配置，主要有下面一些重要的字段
+### chunks
+splitChunks.chunks 的作用是指示采用什么样的方式来优化分离 chunks，常用的有三种常用的取值：async、initial 和 all，async 是默认值。
+#### async
+chunks: 'async' 的意思是只选择通过 import() 异步加载的模块来分离 chunks。例如：
+```js
+// a.js
+import('./utils/m1');
+import './utils/m2';
+
+console.log('some code in a.js');
+
+// b.js
+import('./utils/m1');
+import './utils/m2';
+
+console.log('some code in a.js');
+
+// c.js
+import('./utils/m1');
+import './utils/m2';
+
+console.log('some code in c.js');
+```
+打包结果如下：
+![](./images/engineering_1.jpg)
+#### initial
+chunks: 'initial' 表示同步导入的模块也会被分离，但是一个模块同时被同步导入，同时被异步导入，则不能复用。例如：
+```js
+// a.js
+import('./utils/m1');
+import './utils/m2';
+import './utils/m3'; // 新加的。
+
+console.log('some code in a.js');
+
+// b.js
+import('./utils/m1');
+import './utils/m2';
+import('./utils/m3'); // 新加的。
+
+console.log('some code in a.js');
+
+// c.js
+import('./utils/m1');
+import './utils/m2';
+
+console.log('some code in c.js');
+```
+打包结果如下：
+![](./images/engineering_2.jpg)
+#### all
+chunks: 'all' 表示同步和异步代码都复用。例如：
+```js
+// a.js
+import('./utils/m1');
+import './utils/m2';
+import './utils/m3'; // 新加的。
+
+console.log('some code in a.js');
+
+// b.js
+import('./utils/m1');
+import './utils/m2';
+import('./utils/m3'); // 新加的。
+
+console.log('some code in a.js');
+
+// c.js
+import('./utils/m1');
+import './utils/m2';
+
+console.log('some code in c.js');
+```
+打包结果如下：
+![](./images/engineering_3.jpg)
+
+### cacheGroups
+通过 cacheGroups，可以自定义 chunk 输出分组。设置 test 对模块进行过滤，符合条件的模块分配到相同的组。splitChunks 默认情况下有如下分组：
+```js
+module.exports = {
+  // ...
+  optimization: {
+    splitChunks: {
+      // ...
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/, // 缓存组的规则
+          priority: -10, // 缓存优先级
+          reuseExistingChunk: true, // 是否复用已存在的块
+        },
+        default: {
+          minChunks: 1,  // 拆分前必须共享模块的最小 chunks 数，默认 1
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+};
+```
+参考：[关于 splitChunks 的几个重点属性解析](https://juejin.cn/post/7118953143475372039)

@@ -97,7 +97,7 @@ type T11 = Foo<{ a: string, b: number }>;  // string | number
 ```
 ### 逆变
 而下面的例子 U 所处的位置是函数的参数，其是逆变的。
-```js
+```ts
 type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
 type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
 type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
