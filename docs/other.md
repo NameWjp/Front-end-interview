@@ -205,3 +205,72 @@ MVP 是由 MVC 演化而来，其特点是 View 和 Model 层无法直接通信�
 ## 观察者模式和发布订阅模式的区别
 ![](./images/other_3.jpeg) 
 观察者模式里，订阅者和发布者是松耦合的关系，一个发布者对应多个订阅者。发布订阅模式里，订阅者和发布者完全解耦，订阅者和发布者通过中间人联系。
+
+
+
+## 常见的缓存淘汰算法有哪些
+### FIFO（First In First Out）
+最简单的页面置换算法是先入先出（FIFO）法。这种算法的实质是，总是选择在主存中停留时间最长（即最老）的一页置换，即先进入内存的页，先退出内存。理由是：最早调入内存的页，其不再被使用的可能性比刚调入内存的可能性大。建立一个 FIFO 队列，收容所有在内存中的页。被置换页面总是在队列头上进行。当一个页面被放入内存时，就把它插在队尾上。
+### LRU（Least Recently Used）
+![](./images/other_4.png)   
+最近最少使用策略，不难从字面去理解，就是当一个页面最近最少使用，那么当内存溢出，缓存中淘汰的就是最近最少使用的页面。这也是 Vue 中 keep-alive 默认的缓存淘汰算法，具体代码如下：
+```js
+render() {
+    const slot = this.$slots.default
+    const vnode: VNode = getFirstComponentChild(slot)
+    const componentOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
+    if (componentOptions) {
+        // check pattern
+        const name: ?string = getComponentName(componentOptions)
+        const { include, exclude } = this
+        if (
+            // not included
+            (include && (!name || !matches(include, name))) ||
+            // excluded
+            (exclude && name && matches(exclude, name))
+        ) {
+            return vnode
+        }
+
+        const { cache, keys } = this
+        const key: ?string = vnode.key == null
+            // same constructor may get registered as different local components
+            // so cid alone is not enough (#3269)
+            ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
+            : vnode.key
+        if (cache[key]) {
+            vnode.componentInstance = cache[key].componentInstance
+            // 如果缓存已经存在，则把它放到最前面
+            remove(keys, key)
+            keys.push(key)
+        } else {
+            cache[key] = vnode
+            // 否则直接放到最后面
+            keys.push(key)
+            // prune oldest entry
+            if (this.max && keys.length > parseInt(this.max)) {
+                pruneCacheEntry(cache, keys[0], keys, this._vnode)
+            }
+        }
+
+        vnode.data.keepAlive = true
+    }
+    return vnode || (slot && slot[0])
+}
+```
+### LFU（Least Frequently Used）
+最近最少使用算法，它是基于如果一个数据在最近一段时间内使用次数很少，那么在将来一段时间内被使用的可能性也很小的思路。乍然一看，好像 LFU 跟 LRU 没什么不同，其实，最核心的判断就不同了。**LRU 的淘汰规则是基于访问时间，而 LFU 是基于访问次数的**。例子，假设缓存大小为 3，数据访问序列为：
+```js
+set(2,2)
+set(1,1)
+get(2)
+get(1)
+get(2)
+set(3,3)
+set(4,4)
+```
+则在 set(4,4) 时对于 LFU 算法应该淘汰 (3,3)，而LRU应该淘汰 (1,1)。因为根据 LFU 的核心，在堆栈满载之后，1 访问了 1 次，2 访问了 2 次，虽然 3 是最后才加进来的，但是访问次数为 0，最少访问，所以 LFU 淘汰的是 (3,3)。
+### OPT（Optimal）
+这是一种理想情况下的页面置换算法，但实际上是不可能实现的。该算法的基本思想是：发生缺页时，有些页面在内存中，其中有一页将很快被访问（也包含紧接着的下一条指令的那页），而其他页面则可能要到 10、100 或者 1000 条指令后才会被访问，每个页面都可以用在该页面首次被访问前所要执行的指令数进行标记。最佳页面置换算法只是简单地规定：标记最大的页应该被置换。这个算法唯一的一个问题就是它无法实现。当缺页发生时，操作系统无法知道各个页面下一次是在什么时候被访问。虽然这个算法不可能实现，但是最佳页面置换算法可以用于对可实现算法的性能进行衡量比较。
+
+参考：[缓存算法(页面置换算法)之LRU算法](https://segmentfault.com/a/1190000022481934)
