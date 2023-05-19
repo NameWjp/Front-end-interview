@@ -48,6 +48,7 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 参考链接：  
 + [Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765#heading-18)
 + [tree shaking问题排查指南](https://zhuanlan.zhihu.com/p/491391823)
++ [你的Tree-Shaking并没什么卵用](https://zhuanlan.zhihu.com/p/32831172)
 
 
 
