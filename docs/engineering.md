@@ -39,6 +39,17 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 转换 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
 ### sideEffects
 虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所有代码都是无副作用的，则 webpack 会移除所有未使用的代码。需要注意的是 webpack 去打包你引入的包的时候会查看该包的 package.json 中的 sideEffects 字段，而非你自己项目里的 sideEffects。所以说自己项目配置的 sideEffects 只是指定你自己写的代码是否有副作用，最后 sideEffects 在不配置的情况下默认会认为你写的代码都是有副作用的（保守安全考虑）。
+### tree shaking的常见误区
+#### 包含副作用的代码，不能配置 sideEffects
+sideEffects 实际和代码里是否具有副作用无关，而是该副作用设计是作用在模块内还是模块外，如 vue 代码，虽然有副作用，但是这些副作用是给 vue 的内部实现使用的，而非给外部用的，所以也可以配置 sideEffects 为 false。
+#### 为 css 配置 sideEffects: false
+为了实现 css 的 tree shaking，想通过配置 css 的 sideEffects 来实现 css 的 tree shaking，结果导致业务直接 import css 的 css 没有打包进来，css 的 tree shaking 应该跟着相关组件走，如果改组件配置了sideEffects: false，当没引入改组件的时候，其 css 会自动跟随 tree shaking 掉。
+### tree shaking问题排查方式
+1. 确定是 DCE（去除死代码的术语，例如删除 tree shaking 阶段标记的 `/*#__PURE__*/` 代码，一般由压缩工具实现）问题还是 tree shaking 问题，根据代码出现在 top-level 还是非 top-level，我们能比较容易的区分是 tree shaking 失效还是 DCE 失效。如果是函数内的优化失败那么肯定是 DCE，如果是 top-level 的优化失效，则大概率是 tree shaking 失效(也可能是 DCE 失效，如 top level 的 constant folding)。
+2. 如果是 DCE 失效，那么很可能是 terser|esbuild 的优化级别过低，或者 terser 没有开启某些优化，请检查 terser 相关配置参数，适当的调整 terser 的 [passes](https://github.com/terser/terser#compress-options) 级别。
+3. 如果是 tree shaking 失败，先确认失效模块的路径信息，很多编译工具编译中会保留模块信息(通常需要先关闭 minify，因为 minify 有时会删除掉模块信息)，如 esbuild。
+4. 确认了模块路径信息，进一步确认该模块是否具有副作用以及是否为 esModule，有时候是否具有副作用难以判定，可以尝试配置该模块的路径的 sideEffects: false，然后对比配置前后的产物大小是否具有差异，不是所有的模块都应该配置 sideEffects，请先确保改模块是否具有模块内部副作用性质，避免影响了程序的正确性。
+5. 如果配置了 sideEffects: false，大小仍然没有明显改变，此时存在两种可能：1. 该模块本身就不能 tree shaking，在其他地方存在着对该模块变量的引用，导致了该模块没被  shaking 掉，这一般通过编辑器的 go to reference 或者自己字符串搜索能查到引用的地方。2. 编译工具存在 bug，如不支持 sideEffects，或者 sideEffects 计算错误，请联系编译工具的开发进行协助排查。
 ### 最佳实践
 1. 关闭 babel 的 modules 转换，以开启 tree-shaking
 2. 生产环境指定 mode 为 production
