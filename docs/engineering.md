@@ -57,7 +57,7 @@ sideEffects 实际和代码里是否具有副作用无关，而是该副作用�
 4. 在必要的情况下指定 package.json 中的 sideEffects 字段，用来标记有副作用的代码，帮助 webpack tree-shaking
 
 参考链接：  
-+ [Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765#heading-18)
++ [Webpack 实现 Tree shaking 的前世今生](https://juejin.cn/post/6978648939012554765)
 + [tree shaking问题排查指南](https://zhuanlan.zhihu.com/p/491391823)
 + [你的Tree-Shaking并没什么卵用](https://zhuanlan.zhihu.com/p/32831172)
 
