@@ -72,7 +72,7 @@ interface ColorfulSub extends Colorful {
 ```
 使用继承的方式，如果重写类型会导致编译错误，但交叉类型不会：
 ```ts
-type Colorful {
+type Colorful = {
   color: string;
 }
 
