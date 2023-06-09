@@ -36,7 +36,7 @@ contenthash 将根据资源内容创建出唯一 hash，也就是说文件内容
 3. 确保 usedExports 为 true（默认为 true）
 4. 必要的情况下指定 sideEffects
 ### usedExports
-当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除没有副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的，例如 babel 转换 js 的时候会将一些没有使用的类或函数标记为 `/*#__PURE__*/`。
+当 usedExports 的配置为 true 时，webpack 会去检测语法中的副作用，并会在压缩代码的时候删除：导入了但没有使用的无副作用的代码。此外在遇到 `/*#__PURE__*/` 注释时也会认为该标记代码是无副作用的。babel 转换 js 的时候，对于**没有副作用**的函数，会在它**调用的地方**会标记为 `/*#__PURE__*/`。
 ### sideEffects
 虽然 usedExports 可以自动去除无副作用的代码，但是大部分代码 webpack 是没法判断是否有副作用的。所以 webpack 提供了 sideEffects 字段，通过手动指定 package.json 中的 sideEffects 来标记哪些代码有副作用，当为 false 时则认为所有代码都是无副作用的，则 webpack 会移除所有未使用的代码。需要注意的是 webpack 去打包你引入的包的时候会查看该包的 package.json 中的 sideEffects 字段，而非你自己项目里的 sideEffects。所以说自己项目配置的 sideEffects 只是指定你自己写的代码是否有副作用，最后 sideEffects 在不配置的情况下默认会认为你写的代码都是有副作用的（保守安全考虑）。
 ### tree shaking的常见误区
@@ -123,7 +123,7 @@ module.exports = Plugin
 1. `__esModule`  
 `__esModule` 是为了解决 CJS 和 ESM 互转的问题，标记该代码是由 ESM 打包成 CJS 的，详见：[CJS和ESM的来龙去脉](https://github.com/NameWjp/blog/issues/54)
 2. `__PURE__`  
-babel 的转换或 webpack 的 tree-shaking 过程中会使用 `__PURE__` 标记未使用代码，在后续的压缩中会忽略 `__PURE__` 标记的代码，当然也可以手动添加 `__PURE__` 注解，详见：[聊聊 webpack 的 tree-shaking](#聊聊-webpack-的-tree-shaking)
+babel 的转换或 webpack 的 tree-shaking 过程中会使用 `__PURE__` 标记没有副作的代码（目前只支持在调用的地方标记），在后续的压缩中会忽略：导入但没使用，并且标记为 `__PURE__` 的代码，当然也可以手动添加 `__PURE__` 注解，详见：[聊聊 webpack 的 tree-shaking](#聊聊-webpack-的-tree-shaking)  。未来可能支持 `__NO_SIDE_EFFECTS__` 来在函数定义的地方标记其无副作用，详见：[feat: support `#__NO_SIDE_EFFECTS__` annotation for function declaration](https://github.com/rollup/rollup/pull/5024)
 
 
 
