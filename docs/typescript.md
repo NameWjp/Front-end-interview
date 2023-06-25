@@ -82,7 +82,7 @@ type ColorfulSub = Colorful & {
 ```
 虽然不会报错，那 color 属性的类型是什么呢，答案是 never，取得是 string 和 number 的交集。
 
-另外一方面，从语义的角度来说，interface是接口，type是类型，本身就是两个概念。如果你希望定义一个变量类型，就应该用 type。如果有明确的继承关系或表约束的，就用 interface。例如一个类应该是 implements 一个 interface 而不是 type。
+另外一方面，从语义的角度来说，interface是接口，type是类型，本身就是两个概念。如果你希望定义一个变量类型，就应该用 type。如果有明确的继承关系或表约束的，就用 interface。例如一个类应该是 implements 一个 interface 而不是 type。另外，如果要写泛型的话，必须要用 type 定义。
 
 
 
