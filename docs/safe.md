@@ -1,11 +1,33 @@
 ## 什么是 XSS 
-XSS 攻击的本质是代码注入，利用浏览器拼接成任意的 javascript 去执行自己想做的事情。防御的方法很简单，不要相信用户的任何输入，对于用户的任何输入要进行检查、过滤和转义。
-
+XSS 攻击的本质是代码注入，利用浏览器拼接成任意的 javascript 去执行自己想做的事情。防御的方法很简单，不要相信用户的任何输入，对于用户的任何输入要进行检查、过滤和转义。另外一种防御方式是 CSP（Content Security Policy），它是通过白名单的方式控制资源的加载。例如：设置 script-src 包含了 'unsafe-inline' 才可以允许内联加载 script。
 
 
 ## 什么是 CSRF
 CSRF 攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，但从同源政策来看有两种不跨域，一是 GET 请求通过请求资源的方式，二是 POST 请求通过 form 表单的形式），而每个 http 请求浏览器都会自动携带对应域名下的 Cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。另一种方法是设置 Cookie 的 SameSite 为 Lax，限制跨域请求 Cookie 的发送，能够有效的防止 CSRF 攻击。
 
+
+## 什么是 CSP
+CSP 的实质就是白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。它的实现和执行全部由浏览器完成，开发者只需提供配置。CSP 大大增强了网页的安全性。攻击者即使发现了漏洞，也没法注入脚本，除非还控制了一台列入了白名单的可信主机。两种方法可以启用 CSP：
+1. 通过 HTTP 头信息的Content-Security-Policy的字段
+```
+Content-Security-Policy: script-src 'self'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:
+```
+2. 通过网页的 <meta> 标签
+```
+<meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:">
+```
+
+上面代码中，CSP 做了如下配置。
+```
+脚本：只信任当前域名
+<object>标签：不信任任何URL，即不加载任何资源
+样式表：只信任cdn.example.org和third-party.org
+框架（frame）：必须使用HTTPS协议加载
+其他资源：没有限制
+```
+更多配置：[Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Content-Security-Policy)
+
+参考：[Content Security Policy 入门教程](https://www.ruanyifeng.com/blog/2016/09/csp.html)
 
 
 ## Cookie 的保护方式
