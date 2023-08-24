@@ -102,7 +102,7 @@ type T11 = Foo<{ a: string, b: number }>;  // string | number
 ```ts
 type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
 type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
-type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
+type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number（最新的 TS 会显示 never，其实就是 string & number，只是展示方式变了）
 ```
 由于函数有重载的特性，当 infer 推断时参数会取交集。这种交集形成了一个重载：一个将 string 或 number 作为其参数的函数。
 ### 总结
