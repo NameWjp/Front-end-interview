@@ -91,20 +91,20 @@ type ColorfulSub = Colorful & {
 ## infer 的协变和逆变
 infer 有一个特别有用的性质，当 infer 被同一个类型变量用在多处时，infer 推导出来的类型取决于这些位置是协变还是逆变。如果位置是协变的，那么推导出的类型是各个位置分别推导的类型的 union（或关系），如果位置是逆变的，那么推导的类型是各个位置推导类型的 intersection（且关系）。
 ### 协变
-例如下面的 U 同时处于 record 的属性里，是处于协变位置。
+例如下面的 U 同时处于 record 的属性里，是处于协变位置，推断出来的是并集。
 ```ts
 type Foo<T> = T extends { a: infer U, b: infer U } ? U : never;
 type T10 = Foo<{ a: string, b: string }>;  // string
 type T11 = Foo<{ a: string, b: number }>;  // string | number
 ```
 ### 逆变
-而下面的例子 U 所处的位置是函数的参数，其是逆变的。
+而下面的例子 U 所处的位置是函数的参数，其是逆变的，推断出来的是交集。
 ```ts
 type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
 type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
 type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
 ```
-为什么这里是逆变而上面是协变？对于 `(x: infer U) => void` 类型，由于这里的 `x` 是输入，所以该子类型中的 `x` 必须是 `U` 的子类型才能保证类型的匹配。对应到上面的例子，需要同时是 string 和 number 的子类型，所以结果为 string & number
+由于函数有重载的特性，当 infer 推断时参数会取交集。这种交集形成了一个重载：一个将 string 或 number 作为其参数的函数。
 ### 总结
 在 TypeScript 中，对象、类、数组和函数的返回值类型都是协变关系，而函数的参数类型是逆变关系，所以 infer 位置如果在函数参数上，就会遵循逆变原则。
 
