@@ -112,7 +112,7 @@ type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string &
 
 
 
-### 设计一个泛型，接受一个对象类型，返回一个可选的 key 的对象类型，但不能是空对象
+## 设计一个泛型，接受一个对象类型，返回一个可选的 key 的对象类型，但不能是空对象
 ```ts
 interface Todo {
   title: string
