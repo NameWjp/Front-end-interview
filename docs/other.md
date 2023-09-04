@@ -147,8 +147,8 @@ location [ = | ~ | ~* | ^~ | !~ | !~* ] /uri/ { … }
 |-|-|
 |location = /uri|	= 表示精确匹配
 |location ^~ /uri|	^ 进行前缀匹配，~ 表示区分大小写
-|location ~ pattern &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|	~ 区分大小写的匹配
-|location ~* pattern|	~* 不区分大小写的匹配
+|location ~ pattern &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|	~ 区分大小写的正则匹配
+|location ~* pattern|	~* 不区分大小写的正则匹配
 |location /uri|	不带任何修饰符，也表示前缀匹配，但是在正则匹配之后
 |location /|	通用匹配，任何未匹配到其它 location 的请求都会匹配到，相当于 switch 中的 default
 |location !~|	区分大小写不匹配
