@@ -3,7 +3,12 @@ XSS 攻击的本质是代码注入，利用浏览器拼接成任意的 javascrip
 
 
 ## 什么是 CSRF
-CSRF 攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，但从同源政策来看有两种不跨域，一是 GET 请求通过请求资源的方式，例如：标签的 src 属性可以跨域请求。二是 POST 请求通过 form 表单的形式），而每个 http 请求浏览器都会自动携带对应域名下的 Cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段是放弃 session 的用户认证，采用 token 的认证方式，在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。另一种方法是设置 Cookie 的 SameSite 为 Lax，限制跨域请求 Cookie 的发送，能够有效的防止 CSRF 攻击。
+CSRF 攻击是利用浏览器可以跨域发送请求（ajax 请求会跨域，但从同源政策来看有两种不跨域，一是 GET 请求通过请求资源的方式，例如：标签的 src 属性可以跨域请求。二是 POST 请求通过 form 表单的形式），而每个 http 请求浏览器都会自动携带对应域名下的 Cookie 的特性。如果服务端的认证方式完全基于 cookie，那么这条请求就可以达到伪装用户的目的。常见的防御手段：
+1. 同源检测  
+在HTTP协议中，每一个异步请求都会携带两个Header，用于标记来源域名：Origin Header、Referer Header，检测如果是外域，则拒绝请求。
+2. 放弃 session 的用户认证，采用 token 的认证方式  
+在每个 http 的请求头上携带 token，服务器拿到 token 去效验合法性。
+3. 设置 Cookie 的 SameSite 为 Lax，限制跨域请求 Cookie 的发送  
 
 
 ## 什么是 CSP
