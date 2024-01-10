@@ -64,7 +64,7 @@ sideEffects 实际和代码里是否具有副作用无关，而是该副作用�
 
 
 ## webpack 的 sideEffects 字段应该怎么用
-当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段标记是用来标记哪些文件是 side-effect-free（无副作用）（注意，一旦标记为无副作用，并且使用方未使用你导出的变量，那么即使你代码中有副作用代码，webpack 也会 tree-shaking 掉），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。
+当别人使用你开发的包时，webpack 能够使用 tree-shaking 的前提是你提供了 ESM 格式的代码（package.json 中提供了 module 字段，并且使用方采用 import 语法导入你的包），而 package.json 文件的 sideEffects 字段是用来标记哪些文件是 side-effect-free（无副作用）（注意，一旦标记为无副作用，并且使用方未使用你导出的变量，那么即使你代码中有副作用代码，webpack 也会 tree-shaking 掉），所以说只要你的包不是用来做 polyfill 或 shim 之类的事情，就尽管放心的给他加上。
 
 参考链接：[Webpack 中的 sideEffects 到底该怎么用](https://zhuanlan.zhihu.com/p/40052192)
 
