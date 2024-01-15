@@ -230,3 +230,92 @@ module.exports = {
 };
 ```
 参考：[关于 splitChunks 的几个重点属性解析](https://juejin.cn/post/7118953143475372039)
+
+
+
+## ES6 的 async await 编译为 ES5 是什么样子
+首先 async 和 await 是由 Generator 和一个“自执行”的函数来实现的，babel 实现了 Generator 和一个“自执行函数”。
+```js
+// es6 代码
+async function test() {
+  console.log(1);
+  await new Promise((resolve) => setTimeout(resolve), 0);
+  console.log(2);
+};
+
+// es5 代码
+function test() {
+  return _test.apply(this, arguments);
+}
+function _test() {
+  /**
+   * _asyncToGenerator 是 babel 实现的一个自执行函数，用于启动 Generator
+   * _regeneratorRuntime 是 babel 用 es5 实现的 Generator
+   */
+  _test = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          console.log(1);
+          _context.next = 3;
+          return new Promise(function (resolve) {
+            return setTimeout(resolve);
+          }, 0);
+        case 3:
+          console.log(2);
+        case 4:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return _test.apply(this, arguments);
+};
+```
+下面是一个非常简化的 _regeneratorRuntime 实现：
+```js
+function _simpleRegeneratorRuntime(mark) {
+  let state = 0; // 生成器的内部状态
+  let done = false; // 生成器是否完成
+  let value; // 当前传递的值
+
+  return {
+    next: function(val) {
+      switch (state) {
+        case 0:
+          value = val; // 接收传入的值（如果有的话）
+          state = 1; // 更新状态
+          return { value: mark(), done: false };
+
+        case 1:
+          done = true; // 标记生成器已完成
+          return { value: undefined, done: true };
+
+        default:
+          return { value: undefined, done: true };
+      }
+    }
+  };
+}
+
+// 一个简单的 generator 函数的例子
+function* myGenerator() {
+  yield 'Hello';
+  yield 'World';
+}
+
+// 会被编译成如下代码
+const gen = _simpleRegeneratorRuntime(function() {
+  switch (state) {
+    case 0:
+      return 'Hello';
+    case 1:
+      return 'World';
+  }
+});
+
+// 使用简易的 _regeneratorRuntime
+console.log(gen.next()); // { value: 'Hello', done: false }
+console.log(gen.next()); // { value: 'World', done: false }
+console.log(gen.next()); // { value: undefined, done: true }
+```
