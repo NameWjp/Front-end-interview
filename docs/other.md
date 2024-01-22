@@ -94,14 +94,18 @@ Unicode 在很长一段时间内无法推广，直到互联网的出现，为解
 
 ## git merge 和 git rebase区别
 ### git merge
-例如我们当前的分支情况如下图:  
+例如我们当前的分支情况如下图（注意提交历史是从下到上）:  
 ![](./images/git_1.png)  
 在 master 分支执行 git merge dev 会将 dev 分支合并到当前分支，并生产一个新的提交，如下图：  
 ![](./images/git_2.png)  
 ### git rebase
-例如我们当前的分支情况如下图:  
+例如我们当前的分支情况如下图（注意提交历史是从下到上）:  
 ![](./images/git_3.png)  
-在 master 分支执行 git rebase dev 会以当前分支与 dev 分支分开的点开始（3311ba0），抹去之后的提交，依次生成合并后的提交，如下图：  
+在 master 分支执行 git rebase dev 后，会以 dev 分支为基线，从 master 与 dev 分支分开的点开始（3311ba0），找到 master 分支在该点之后的提交（85841be、a016f64、e53ec51），将这些提交从 dev 分支的基线的最后一个提交开始（35b6708），依次添加这些提交。
+
+注意这里新添加的提交是新生成的，但提交日期还是之前实际提交的日期，这可能会导致 master 上的 commit 时间不是顺序的，如果介意这一点可以使用 `git rebase -i <commitId>` 来合并 commit，合并生成新的 commit 日期就是最新的了，可以参考：[修复使用git rebase导致提交记录时间线乱序问题](https://juejin.cn/post/7178746173094625336)。
+
+最终结果如下图：  
 ![](./images/git_4.png)  
 ### 总结
 如果你想要一个干净的，没有 merge commit 的线性历史树，那么你应该选择 git rebase  
