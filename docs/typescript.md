@@ -29,7 +29,7 @@ const bear = getBear();
 bear.name;
 bear.honey;
 ```
-type 和 interface 两者最关键的差别在于 type 别名本身无法添加新的属性，而 interface 是可以扩展的。
+type 和 interface 两者最关键的差别在于 type 别名本身无法添加新的属性，而 interface 是可以扩展的（这在某些场景非常有用，例如 vue 对 JSX 的扩展：[https://github.com/vuejs/core/blob/main/packages/vue/jsx-runtime/index.d.ts](https://github.com/vuejs/core/blob/main/packages/vue/jsx-runtime/index.d.ts)）。
 ```ts
 // Interface
 // 对一个已经存在的接口添加新的字段
