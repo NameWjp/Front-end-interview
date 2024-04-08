@@ -110,6 +110,9 @@ Unicode 在很长一段时间内无法推广，直到互联网的出现，为解
 ### 总结
 如果你想要一个干净的，没有 merge commit 的线性历史树，那么你应该选择 git rebase  
 如果你想保留完整的历史记录，并且想要避免重写 commit history 的风险，你应该选择使用 git merge  
+#### 正确的开发流程：
+master 分支不提交代码，dev 分支开发完毕后，执行 `git rebase master` 以 master 为基线执行 rebase（好处是可以保证 master 分支代码的稳定，因为你直接到 master 执行 merge dev 的时候，你是不知道 dev 的代码是否有问题的），处理完成并验证没问题后，走线上 merge 到 master 分支，这样可以保证 dev 不会和 master 发生冲突，是一条直线
+
 
 
 
