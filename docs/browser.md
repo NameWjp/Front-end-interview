@@ -65,4 +65,6 @@ Content-Type：只限于三个值 application/x-www-form-urlencoded、 multipart
 6. 渲染页面  
 html、css 的解析，构建渲染树，视图渲染，JavaScript 的编译和执行等
 
-详细解析参考：[https://zhuanlan.zhihu.com/p/80551769](https://zhuanlan.zhihu.com/p/80551769)
+详细解析参考：
+[https://zhuanlan.zhihu.com/p/80551769](https://zhuanlan.zhihu.com/p/80551769)
+[浏览器的工作原理](https://developer.mozilla.org/zh-CN/docs/Web/Performance/Guides/How_browsers_work)
